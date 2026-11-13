@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ปาริชาต · Parichat AI Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--c1:#dc2626;--c2:#e11d48;--ink:#1f2937;--mute:#6b7280;--line:#eadfd3;--bg:#f5f7fb}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;min-height:100vh;font-family:'Prompt',system-ui,sans-serif;color:var(--ink);font-size:14px;line-height:1.6;background:radial-gradient(1100px 560px at 8% -12%,#fecaca 0,transparent 60%),radial-gradient(900px 480px at 108% 2%,#fce7f3 0,transparent 55%),var(--bg)}
+button,input,textarea,select{font:inherit}
+.wrap{max-width:1200px;margin:0 auto;padding:0 16px}
+header{position:sticky;top:0;z-index:20;color:#fff;background:linear-gradient(120deg,#991b1b,#dc2626,#e11d48);box-shadow:0 8px 24px -12px rgba(190,18,60,.6)}
+.hd{display:flex;justify-content:space-between;align-items:center;height:68px}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:46px;height:46px;border-radius:16px;display:grid;place-items:center;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35)}
+.logo svg{width:30px;height:30px}
+.brand b{font-size:18px}
+.brand small{display:block;color:rgba(255,255,255,.85);font-size:12px}
+.btn{border:0;border-radius:12px;padding:9px 16px;cursor:pointer;font-weight:500;transition:.2s}
+.btn-p{color:#fff;background:linear-gradient(135deg,var(--c1),var(--c2));box-shadow:0 8px 18px -10px rgba(220,38,38,.8)}
+.btn-p:hover{filter:brightness(1.05);transform:translateY(-1px)}
+.btn-s{background:#fff;border:1px solid var(--line);color:#374151}
+.btn-s:hover{background:#fef2f2}
+.btn-d{background:#fee2e2;color:#b91c1c}.btn-ghost{color:#fff;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3)}.btn-ghost:hover{background:rgba(255,255,255,.25)}
+.layout{display:grid;grid-template-columns:300px 1fr;gap:18px;align-items:start;padding:18px 0 22px}
+.card{background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:0 10px 30px -18px rgba(127,29,29,.18)}
+.side{display:grid;gap:16px}
+.hero{padding:22px;text-align:center}
+.hero svg{width:104px;height:104px;animation:bob 4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-6px)}}
+.hero h2{margin:4px 0 0;font-size:20px}
+.hero p{margin:0;color:var(--mute);font-size:12px}
+.pill{display:inline-flex;gap:6px;align-items:center;margin-top:10px;padding:3px 12px;border-radius:999px;background:#ecfdf5;color:#047857;border:1px solid #a7f3d0;font-size:12px}
+.dot{width:8px;height:8px;border-radius:50%;background:#10b981;animation:bl 1.6s infinite}
+@keyframes bl{50%{opacity:.3}}
+.sec{padding:16px}
+.sec h3{margin:0 0 6px;font-size:14px}
+.dept{display:block;width:100%;margin-top:6px;padding:9px 12px;border-radius:12px;border:1px solid var(--line);background:#fff;cursor:pointer;text-align:left;color:#374151}
+.dept.on{background:linear-gradient(135deg,#fef2f2,#fff1f2);border-color:#fca5a5;color:var(--c1);font-weight:600}
+.q{display:block;width:100%;margin-top:6px;padding:9px 12px;border-radius:12px;border:1px dashed #fecaca;background:#fffafa;cursor:pointer;text-align:left;color:#7f1d1d}
+.q:hover{background:#fef2f2}
+.chat{display:flex;flex-direction:column;height:calc(100vh - 120px);min-height:540px;overflow:hidden}
+.ch{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.sub{font-size:12px;color:var(--mute)}
+.msgs{flex:1;min-height:0;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:14px;background:linear-gradient(#fffafa,#fff)}
+.row{display:flex;gap:10px;max-width:88%}
+.row.me{align-self:flex-end;flex-direction:row-reverse}
+.av{width:36px;height:36px;flex-shrink:0;border-radius:12px;display:grid;place-items:center;color:#fff;font-size:12px;font-weight:600;background:linear-gradient(135deg,var(--c1),var(--c2))}
+.me .av{background:#334155}
+.bub a{color:#1d4ed8;text-decoration:underline;word-break:break-all}
+.bub{padding:12px 16px;border-radius:18px;border-top-left-radius:4px;background:#fff;border:1px solid var(--line);box-shadow:0 2px 6px -4px rgba(0,0,0,.12);word-break:break-word}
+.me .bub{color:#fff;border:0;border-top-left-radius:18px;border-top-right-radius:4px;background:linear-gradient(135deg,var(--c1),var(--c2))}
+.meta{margin-top:4px;font-size:11px;color:#9ca3af}
+.me .meta{text-align:right}
+.note{margin-top:8px;font-size:12px;color:#991b1b}
+.typing{display:none;padding:0 18px 8px;font-size:12px;color:var(--mute)}
+.typing.on{display:block}
+.dots span{display:inline-block;width:6px;height:6px;margin-right:3px;border-radius:50%;background:var(--c1);animation:bo 1s infinite}
+.dots span:nth-child(2){animation-delay:.15s}
+.dots span:nth-child(3){animation-delay:.3s}
+@keyframes bo{0%,80%,100%{transform:none;opacity:.4}40%{transform:translateY(-4px);opacity:1}}
+.comp{display:flex;gap:10px;padding:14px;border-top:1px solid var(--line)}
+.comp input{flex:1;padding:12px 16px;border:1px solid var(--line);border-radius:14px;background:#fffafa;outline:none}
+.comp input:focus,.inp:focus{border-color:#f87171;box-shadow:0 0 0 3px rgba(220,38,38,.15)}
+.comp .btn{padding:0 22px}
+.comp .ic{width:46px;padding:0;border:1px solid var(--line);background:#fff;border-radius:14px;font-size:20px;cursor:pointer;flex:none}
+.comp .ic.on{background:#fee2e2;border-color:var(--c1)}
+.comp .ic.rec{background:var(--c1);color:#fff;animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.6}}
+.vnote{font-size:12px;color:#9ca3af;padding:0 14px 8px;display:none}
+.modal{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:14px;background:rgba(17,24,39,.5);backdrop-filter:blur(4px)}
+.modal.on{display:flex}
+.sheet{width:min(1000px,100%);max-height:94vh;display:flex;flex-direction:column;background:#fff;border-radius:24px;overflow:hidden}
+.sh{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;color:#fff;font-weight:600;background:linear-gradient(120deg,#7f1d1d,var(--c1))}
+.sh button{background:none;border:0;color:#fecaca;font-size:18px;cursor:pointer}
+.tabs{flex:0 0 auto;display:flex;gap:6px;padding:10px 16px;border-bottom:1px solid var(--line);overflow-x:auto;overflow-y:hidden}
+.tab{border:0;background:none;padding:8px 14px;border-radius:10px;cursor:pointer;color:var(--mute);white-space:nowrap}
+.tab.on{background:#fef2f2;color:var(--c1);font-weight:600}
+.sb{padding:18px 20px;overflow-y:auto;display:grid;gap:14px}
+.box{border:1px solid var(--line);border-radius:16px;padding:14px}
+.box h3{margin:0 0 8px;font-size:14px}
+.box label{display:block;margin:6px 0 4px;font-size:12px;color:#4b5563}
+.inp{width:100%;margin-bottom:6px;padding:9px 12px;border:1px solid #d6d3d1;border-radius:12px;outline:none;background:#fff}
+textarea.inp{resize:vertical}
+.row2{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.k{padding:12px;border-radius:16px;background:#fef2f2;border:1px solid #fecaca}
+.k b{display:block;font-size:22px;color:var(--c1)}
+.k span{font-size:12px;color:#7f1d1d}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{padding:7px 8px;border-bottom:1px solid #f3f4f6;text-align:left;vertical-align:top}
+th{color:var(--mute);font-weight:500}
+.item{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:10px 12px;margin-bottom:8px;border:1px solid var(--line);border-radius:12px;background:#fffafa}
+.item p{margin:2px 0 0;font-size:12px;color:var(--mute);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.chip{display:inline-block;margin:2px;padding:0 8px;border-radius:999px;font-size:11px;background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+.drop{padding:18px;text-align:center;cursor:pointer;color:#991b1b;background:#fffafa;border:2px dashed #fca5a5;border-radius:16px}
+.gate{max-width:360px;width:100%;margin:20px auto;text-align:center}
+.err{display:none;color:#b91c1c;font-size:12px}
+#panel{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+.sb[data-pane]{flex:1 1 auto;min-height:0}
+.imgs{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.imgs img{width:200px;max-width:100%;height:auto;border-radius:12px;border:1px solid var(--line);background:#fff}
+.subrow{display:grid;grid-template-columns:170px 1fr auto;gap:6px;align-items:start;margin-bottom:6px}.subrow .inp{margin:0}.subrow textarea{min-height:40px}@media(max-width:600px){.subrow{grid-template-columns:1fr}}
+.imgrow{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0}
+.imgrow>div{position:relative}
+.imgrow img,.thumb{width:84px;height:64px;object-fit:cover;border-radius:10px;border:1px solid var(--line);display:inline-block}
+.imgrow button{position:absolute;top:-6px;right:-6px;border:0;border-radius:999px;width:22px;height:22px;background:#b91c1c;color:#fff;cursor:pointer;font-size:12px}
+@media(max-width:860px){.layout{grid-template-columns:1fr}.chat{height:74vh}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="bot" viewBox="0 0 100 100">
+    <circle cx="50" cy="50" r="48" fill="#fef2f2"/>
+    <line x1="50" y1="14" x2="50" y2="24" stroke="#dc2626" stroke-width="3"/>
+    <circle cx="50" cy="12" r="4" fill="#dc2626"/>
+    <rect x="24" y="26" width="52" height="44" rx="14" fill="#fff" stroke="#dc2626" stroke-width="3"/>
+    <rect x="31" y="34" width="38" height="28" rx="8" fill="#1e293b"/>
+    <path d="M39 46q4-4 8 0M53 46q4-4 8 0" stroke="#f87171" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M34 74h32l-5 12H39z" fill="#dc2626"/>
+    <g fill="#fda4af"><circle cx="80" cy="18" r="4"/><circle cx="85" cy="24" r="4"/><circle cx="82" cy="30" r="4"/><circle cx="76" cy="30" r="4"/><circle cx="75" cy="24" r="4"/></g>
+    <circle cx="80" cy="24" r="3" fill="#fde68a"/>
+  </symbol>
+</defs></svg>
+
+<header><div class="wrap hd">
+  <div class="brand">
+    <div class="logo"><svg viewBox="0 0 100 100"><use href="#bot"/></svg></div>
+    <div><b>ปาริชาต</b><small>Parichat · ผู้ช่วย AI ประจำวิทยาลัย</small></div>
+  </div>
+  <button class="btn btn-ghost" id="adminBtn">🔐 Admin</button>
+</div></header>
+
+<main class="wrap layout">
+  <aside class="side">
+    <div class="card hero">
+      <svg viewBox="0 0 100 100"><use href="#bot"/></svg>
+      <h2>น้องปาริชาต</h2>
+      <p>ถามได้ทุกเรื่องของวิทยาลัย</p>
+      <span class="pill"><span class="dot"></span>พร้อมให้บริการ</span>
+    </div>
+    <div class="card sec"><h3>🏛️ เลือกฝ่ายที่ต้องการถาม</h3><div id="depts"></div></div>
+    <div class="card sec"><h3>⚡ คำถามยอดฮิต</h3><div id="quick"></div></div>
+  </aside>
+
+  <section class="card chat">
+    <div class="ch">
+      <div><b>สนทนากับน้องปาริชาต</b><div class="sub" id="chatSub">ค้นหาจากข้อมูลของทุกฝ่าย</div></div>
+      <button class="btn btn-s" id="clearBtn">ล้างการสนทนา</button>
+    </div>
+    <div class="msgs" id="msgs"></div>
+    <div class="typing" id="typing"><span class="dots"><span></span><span></span><span></span></span> กำลังค้นหาและเรียบเรียงคำตอบ...</div>
+    <form class="comp" id="form" autocomplete="off">
+      <input id="input" placeholder="พิมพ์คำถาม เช่น การแต่งกายนักศึกษาหญิงเป็นอย่างไร">
+      <button class="ic" type="button" id="micBtn" title="กดแล้วพูดคำถาม" aria-label="พูดคำถาม">🎤</button>
+      <button class="ic" type="button" id="spkBtn" title="เปิด/ปิดเสียงตอบ" aria-label="เปิดปิดเสียงตอบ">🔇</button>
+      <button class="btn btn-p" type="submit">ส่ง</button>
+    </form>
+    <div class="vnote" id="vnote"></div>
+  </section>
+</main>
+
+<div class="modal" id="modal"><div class="sheet">
+  <div class="sh"><span>🛡️ หลังบ้าน · น้องปาริชาต</span><button id="logoutBtn" style="background:rgba(255,255,255,.15);color:#fff;border:0;border-radius:10px;padding:6px 12px;cursor:pointer;margin-right:8px">ออกจากระบบ</button><button id="closeBtn" aria-label="ปิด">✕</button></div>
+  <div class="sb gate" id="gate">
+    <div style="font-size:38px">🔐</div>
+    <h3 style="margin:0">เข้าสู่ระบบแอดมิน</h3>
+    <input type="password" id="pwd" class="inp" placeholder="รหัสผ่าน">
+    <p class="err" id="pwdErr">รหัสผ่านไม่ถูกต้อง</p>
+    <button class="btn btn-p" id="loginBtn" style="width:100%">เข้าสู่ระบบ</button>
+  </div>
+  <div id="panel" hidden style="display:flex;flex-direction:column;min-height:0">
+    <div class="tabs">
+      <button class="tab on" data-tab="kb">คลังความรู้</button>
+      <button class="tab" data-tab="dept">ฝ่าย</button>
+      <button class="tab" data-tab="log">Log การใช้งาน</button>
+      <button class="tab" data-tab="cfg">ตั้งค่า</button>
+    </div>
+
+    <div class="sb" data-pane="kb">
+      <div class="kpi">
+        <div class="k"><b id="stDocs">0</b><span>หัวข้อความรู้</span></div>
+        <div class="k"><b id="stChunks">0</b><span>ข้อมูลย่อย</span></div>
+        <div class="k"><b id="stDepts">0</b><span>ฝ่าย</span></div>
+        <div class="k"><b id="stQ">0</b><span>คำถามที่ถาม</span></div>
+      </div>
+      <div class="box"><h3>📤 อัปโหลดไฟล์ความรู้</h3>
+        <div class="row2"><label style="margin:0">นำเข้าเข้าฝ่าย</label><select id="upDept" class="inp" style="width:auto;margin:0"></select></div>
+        <div class="drop" id="dropBtn" style="margin-top:8px">คลิกเพื่อเลือกไฟล์ .txt · .md · .csv · .json</div>
+        <input type="file" id="file" accept=".txt,.md,.csv,.json" hidden>
+      </div>
+      <div class="box"><h3>✍️ เพิ่มข้อมูลด้วยตนเอง</h3>
+        <label>ฝ่าย</label><select id="mDept" class="inp"></select>
+        <label>หัวข้อ / คำถาม</label><input id="mTitle" class="inp">
+        <label>หัวข้อย่อย + รายละเอียด (แยกเป็นหัวข้อย่อยให้ละเอียด เช่น เสื้อ / กางเกง / รองเท้า ระบบจะค้นหาได้แม่นขึ้น)</label>
+        <div id="mSubs"></div>
+        <button type="button" class="btn btn-s" id="subAdd" style="margin:2px 0 8px">＋ เพิ่มหัวข้อย่อย</button>
+        <label>เนื้อหาทั่วไป (ไม่บังคับ ถ้ากรอกหัวข้อย่อยแล้ว)</label><textarea id="mBody" class="inp" rows="3"></textarea>
+        <label>คำค้นเพิ่มเติม (คั่นด้วยจุลภาค)</label><input id="mKw" class="inp"><label>รูปภาพประกอบคำตอบ (ไม่เกิน 3 รูป ระบบย่อขนาดให้อัตโนมัติ)</label><input type="file" id="mImgs" accept="image/*" multiple class="inp"><div id="mPreview" class="imgrow"></div>
+        <button class="btn btn-p" id="addBtn">บันทึกเข้าคลัง</button>
+      </div>
+      <div class="box"><h3>🔎 ทดสอบการค้นหา</h3>
+        <div class="row2"><input id="tq" class="inp" style="flex:1;margin:0" placeholder="พิมพ์คำถามทดสอบ"><button class="btn btn-s" id="tBtn">ทดสอบ</button></div>
+        <div id="tOut" style="margin-top:8px"></div>
+      </div>
+      <div class="box">
+        <div class="row2" style="justify-content:space-between"><h3 style="margin:0">🗂️ คลังความรู้</h3>
+          <div class="row2"><select id="filterDept" class="inp" style="width:auto;margin:0"></select><button class="btn btn-s" id="resetBtn">คืนค่าเริ่มต้น</button></div>
+        </div>
+        <p class="sub" id="seedWarn" hidden style="color:#b91c1c;margin:8px 0 0">⚠️ ชีตยังว่างอยู่ ตอนนี้ทุกคนเห็นข้อมูลเริ่มต้นในไฟล์ กดปุ่ม "ส่งข้อมูลเริ่มต้นขึ้นชีต" ก่อนเพิ่มข้อมูลใหม่</p>
+        <div id="list" style="margin-top:8px"></div>
+      </div>
+    </div>
+
+    <div class="sb" data-pane="dept" hidden>
+      <div class="box"><h3>🏛️ จัดการฝ่าย</h3>
+        <p class="sub" style="margin:0 0 8px">เพิ่มฝ่ายของวิทยาลัยได้ทุกฝ่าย ระบบจะแยกข้อมูลและให้ผู้ใช้เลือกถามได้ตามฝ่าย</p>
+        <div class="row2"><input id="newDept" class="inp" style="flex:1;margin:0" placeholder="ชื่อฝ่ายใหม่"><button class="btn btn-p" id="deptAdd">เพิ่มฝ่าย</button></div>
+        <div id="deptList" style="margin-top:10px"></div>
+      </div>
+    </div>
+
+    <div class="sb" data-pane="log" hidden>
+      <p class="sub" style="margin:0">ระบบบันทึกเฉพาะผู้ใช้ทั่วไป ขณะเข้าสู่ระบบแอดมินจะไม่บันทึกการใช้งาน</p><div class="kpi" id="logKpi"></div>
+      <div class="box">
+        <div class="row2" style="justify-content:space-between"><h3 style="margin:0">📋 คำถามล่าสุด</h3>
+          <div class="row2"><button class="btn btn-s" id="exportBtn">ส่งออก CSV</button><button class="btn btn-d" id="clearLogBtn">รีเซ็ตการเข้าใช้งาน</button></div>
+        </div>
+        <div id="logTable" style="margin-top:8px;max-height:320px;overflow:auto"></div>
+      </div>
+      <div class="box"><h3>❓ คำถามที่ตอบไม่ได้ (ควรเพิ่มข้อมูล)</h3><div id="gapList"></div></div>
+      <div class="box"><h3>🔥 คำถามที่ถามบ่อย</h3><div id="topList"></div></div>
+    </div>
+
+    <div class="sb" data-pane="cfg" hidden>
+      <div class="box" id="cloudBox" hidden><h3>☁️ เชื่อมต่อชีตกลางแล้ว</h3>
+        <p class="sub" id="cloudStat" style="margin:0 0 8px"></p>
+        <p class="sub" style="margin:0 0 8px">ข้อมูลและ Log เก็บใน Google Sheets ส่วน API Key และรหัสแอดมินตั้งที่ Script Properties ของ Apps Script (ไม่อยู่ในหน้าเว็บ)</p>
+        <button class="btn btn-s" id="cloudRefresh">รีเฟรชข้อมูลจากชีต</button>
+      </div>
+      <div class="box" id="aiBox"><h3>🤖 ตั้งค่า AI</h3>
+        <label><input type="checkbox" id="aiOn"> เปิดใช้ AI เรียบเรียงคำตอบจากข้อมูลในคลัง</label>
+        <label>Anthropic API Key</label><input id="aiKey" type="password" class="inp">
+        <label>ชื่อโมเดล</label><input id="aiModel" class="inp" placeholder="claude-haiku-5-5">
+      </div>
+      <div class="box" id="logBox"><h3>📡 ส่ง Log ไปยังเซิร์ฟเวอร์ (ไม่บังคับ)</h3>
+        <p class="sub" style="margin:0 0 6px">ใส่ URL ของ Google Apps Script หรือ webhook เพื่อรวม Log จากทุกเครื่อง หากว่างไว้ Log จะเก็บเฉพาะในเครื่องนี้</p>
+        <input id="logUrl" class="inp" placeholder="https://...">
+      </div>
+      <div class="row2"><button class="btn btn-p" id="cfgSave">บันทึกการตั้งค่า</button><span class="sub" id="cfgStatus"></span></div>
+      <p class="sub">⚠️ Log เก็บเฉพาะข้อความคำถาม เวลา ฝ่ายที่เลือก และรหัสเซสชันแบบสุ่ม ไม่เก็บชื่อหรือข้อมูลส่วนบุคคล ควรแจ้งผู้ใช้และปฏิบัติตาม PDPA ก่อนใช้งานจริง คีย์ AI เก็บไว้ในเบราว์เซอร์นี้เท่านั้น</p>
+    </div>
+  </div>
+</div></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const NAME = 'น้องปาริชาต';
+const ADMIN_PASSWORD = 'admin1234'; // เปลี่ยนก่อนใช้งานจริง
+// ---- แชร์ข้อมูลข้ามเครื่อง: วาง Web app URL ของ Google Apps Script ไว้ในเครื่องหมายคำพูดด้านล่าง ----
+// เว้นว่างไว้ = ทำงานแบบเก็บข้อมูลในเบราว์เซอร์เครื่องนี้เท่านั้น
+const CLOUD_URL = 'https://script.google.com/macros/s/AKfycbzTQ0aLw_o88-QCHzM8KreNAdyJBRNIzzULB3yUyBsuEnPgipluol9h1TF8jvBvI3jT/exec';
+const CLOUD = /^https:\/\//.test(CLOUD_URL);
+const PWD_KEY = 'pc_admin_pwd';
+const K = { kb: CLOUD ? 'pc_cloud_kb_v1' : 'pc_kb_v1', dept: CLOUD ? 'pc_cloud_dept_v1' : 'pc_dept_v2', cfg: 'pc_cfg_v1', logs: 'pc_logs_v1', sid: 'pc_sid_v1', ai: 'pc_cloud_ai', ver: 'pc_cloud_ver' };
+const DEFAULT_DEPTS = ["ฝ่ายปกครอง", "งานกิจกรรม", "แนะแนว", "การเงิน", "ฝ่ายทรัพยากร"];
+const QUICK = ['การแต่งกายนักศึกษาหญิงเป็นอย่างไร', 'ทรงผมนักเรียนชายเป็นอย่างไร', 'ตัดคะแนนความประพฤติมีกี่ระดับ', 'ขาดกิจกรรมหน้าเสาธงกี่ครั้งถึงจะถูกตักเตือน', 'นักเรียนนำรถยนต์มาจอดได้ไหม'];
+const WELCOME = 'สวัสดีค่ะ 🌸 ดิฉัน **' + NAME + '** ผู้ช่วย AI ประจำวิทยาลัย\n\nถามได้ทั้งเรื่องระเบียบ กิจกรรม และข้อมูลของทุกฝ่าย เลือกฝ่ายที่ต้องการจากเมนูด้านซ้ายได้เลยค่ะ';
+const NOT_FOUND = 'ขออภัยค่ะ ยังไม่พบข้อมูลที่ตรงกับคำถามนี้ในคลังความรู้ ลองระบุคำถามให้ชัดขึ้น หรือเลือกฝ่ายที่เกี่ยวข้องจากเมนูด้านซ้ายค่ะ ระบบบันทึกคำถามนี้ไว้ให้ฝ่ายที่เกี่ยวข้องเพิ่มข้อมูลได้';
+const DEFAULT_KB = [{"id": "dress-01", "title": "ระเบียบการแต่งกาย ข้อ 1", "keywords": ["ชื่อระเบียบ"], "content": "ข้อ 1 ระเบียบนี้เรียกว่า “ระเบียบวิทยาลัยการอาชีพนครปฐม” ว่าด้วยการแต่งกายและเครื่องแบบนักเรียน นักศึกษา พ.ศ.2563", "source": "default", "dept": "ฝ่ายปกครอง"}, {"id": "dress-02", "title": "ระเบียบการแต่งกาย ข้อ 2 ระเบียบนี้ให้ใช้บังคับตั้งแต่ภาคเรียนที่ 1 ปีการศึกษา 2568 เป็นต้นไป", "keywords": ["ใช้บังคับ", "ภาคเรียนที่ 1"], "content": "ข้อ 2 ระเบียบนี้ให้ใช้บังคับตั้งแต่ภาคเรียนที่ 1 ปีการศึกษา 2568 เป็นต้นไป", "source": "default", "dept": "ฝ่ายปกครอง"}, {"id": "dress-03", "title": "ระเบียบการแต่งกาย ข้อ 3", "keywords": ["ยกเลิก"], "content": "ข้อ 3 ให้ยกเลิกระเบียบหรือข้อบังคับอื่นใดของวิทยาลัยการอาชีพนครปฐม ที่ขัดแย้ง กับระเบียบนี้ โดยให้ใช้ระเบียบนี้แทน", "source": "default", "dept": "ฝ่ายปกครอง"}, {"id": "dress-04", "title": "ระเบียบการแต่งกาย ข้อ 4 เครื่องแบบนักเรียนชาย ระดับประกาศนียบัตรวิชาชีพ (ปวช.)", "keywords": ["นักเรียนชาย", "ปวช", "เสื้อ", "กางเกง", "เข็มขัด", "รองเท้า", "ถุงเท้า"], "content": "4.1 เสื้อคอปกเชิ๊ต ผ้าโทเรหรือผ้าขาวเกลี้ยง เนื้อผ้าไม่บางเกินไป ไม่มีลวดลาย ไม่รัดรูป สาบตลบออกข้างนอก ผ่าตลอด ใช้กระดุมสีขาวกลม แขนสั้นเหนือข้อศอก มีกระเป๋า ขนาดกว้างประมาณ 10 เซนติเมตร และลึกประมาณ 12 เซนติเมตร\n4.2 กางเกงแบบสากลทรงสุภาพ ไม่รัดรูป ขายาวสีกรมท่า ห้ามใช้ผ้ายีนส์และลูกฟูก มีหูกางเกงกว้าง 1 เซนติเมตร ยาว 4 เซนติเมตร สำหรับสอดเข็มขัด กระเป๋าหลัง เจาะไม่มีฝาปิด ความยาวของกางเกงต้องปิดถึงตาตุ่ม (ห้ามยาวจนลากพื้น) ปลายขากางเกงกว้างวัดรอบไม่น้อยกว่า 36 เซนติเมตร และไม่เกิน 46 เซนติเมตร ไม่พับปลายขากางเกงออกด้านนอก และสวมทับชายเสื้อให้เรียบร้อย\n4.3 เข็มขัดหนังสีดำ ไม่มีลวดลาย ขนาดกว้าง 3.5 เซนติเมตร มีปลอกสีเดียวกับเข็มขัด หัวเข็มขัดเป็นโลหะ มีตราวิทยาลัยการอาชีพนครปฐม\n4.4 รองเท้าผ้าใบหุ้มส้นสีดำ ไม่มีลวดลาย มีเชือกผูก พื้นรองเท้าสีดำ\n4.5 ถุงเท้าสีดำไม่มีลวดลาย ยาวเหนือข้อเท้า (ตาตุ่ม)\n4.6 ชุดฝึกงาน เป็นไปตามแบบและสีที่วิทยาลัยฯ กำหนดตามสาขาวิชา", "source": "default", "dept": "ฝ่ายปกครอง"}, {"id": "dress-05", "title": "ระเบียบการแต่งกาย ข้อ 5 การแต่งกายและทรงผมของนักเรียนชายระดับประกาศนียบัตรวิชาชีพ (ปวช.)", "keywords": ["นักเรียนชาย", "ปวช", "ทรงผม", "ดัดผม", "ย้อมสีผม", "หนวด", "เครา", "สัก", "เครื่องประดับ"], "content": "5.1 ทรงผมตัดผมรองทรง โดยมีผมด้านบนและด้านหน้ายาวไม่เกิน 7 เซนติเมตร (ตามระเบียบกระทรวงศึกษาธิการ)\n5.2 นักเรียนต้องห้ามปฏิบัติตน ดังนี้\n5.2.1 ดัดผม\n5.2.2 ย้อมสีผมให้ผิดไปจากเดิม\n5.2.3 ไว้หนวด หรือเครา\n5.2.4 การตัดแต่งทรงผมเป็นรูปทรงสัญลักษณ์หรือเป็นลวดลาย\n5.3 สวมกางเกงทับชายเสื้อให้เรียบร้อย ไม่ปล่อยเสื้อหรือดึงชายเสื้อออกมานอกขอบกางเกง (ยกเว้นเสื้อฝึกงาน)\n5.4 ห้ามใส่เครื่องประดับ เช่น สร้อยข้อมือ แหวน ที่ไม่เหมาะสมกับสภาพการเป็นนักเรียน\n5.5 ไม่สักหรือเจาะร่างกายบริเวณที่สามารถมองเห็นชัด", "source": "default", "dept": "ฝ่ายปกครอง"}, {"id": "dress-06", "title": "ระเบียบการแต่งกาย ข้อ 6 เครื่องแบบนักเรียนหญิง ระดับประกาศนียบัตร (ปวช.)", "keywords": ["นักเรียนหญิง", "ปวช", "เสื้อ", "กระโปรง", "เข็มขัด", "รองเท้า"], "content": "6.1 เสื้อคอปกเชิ๊ต แขนสั้น ไม่มีลวดลาย ไม่รัดรูป และไม่หลวมเกินไป ผ้าสีขาวเกลี้ยงไม่บางเกินสมควร ผ่าอกตลอด สาบตลบเข้าข้างใน กว้าง 3 เซนติเมตร ไม่ต่อหลังปก มีกระดุมโลหะสีเงิน มีเครื่องหมายตามวิทยาลัยกำหนดแขนปล่อยยาวเหนือศอก กลัดเครื่องหมายวิทยาลัยการอาชีพนครปฐม ที่หน้าอกเสื้อด้านขวา เวลาสวมใส่ ชายเสื้อใส่ไว้ในกระโปรง\n6.2 กระโปรงผ้าสีกรมท่าไม่มีลวดลาย กระโปรงจีบทวิสคู่ ด้านหน้าและหลังลึก 7 เซนติเมตร ไม่ผ่าชายกระโปรง กระโปรงยาวคลุมเข่า ประมาณ 7 เซนติเมตร\n6.3 เข็มขัดหนังสีดำ ไม่มีลวดลาย ขนาดกว้าง 3.5 เซนติเมตร มีปลอกสีเดียวกับเข็มขัด หัวเข็มขัดเป็นโลหะ มีตราวิทยาลัยการอาชีพนครปฐม\n6.4 รองเท้าหนังหุ้มส้น หุ้มปลาย หัวมน ไม่มีลวดลาย มีส้นสูงไม่เกิน 6 เซนติเมตร ส้นไม่แหลม", "source": "default", "dept": "ฝ่ายปกครอง"}, {"id": "dress-07", "title": "ระเบียบการแต่งกาย ข้อ 7 การแต่งกายและทรงผมของนักเรียนหญิง ระดับประกาศนียบัตรวิชาชีพ (ปวช.)", "keywords": ["นักเรียนหญิง", "ปวช", "ทรงผม", "ผมยาว", "ดัดผม", "ย้อมสีผม", "เสื้อบังทรง", "เครื่องประดับ", "เครื่องสำอาง"], "content": "7.1 นักเรียนหญิงจะไว้ผมยาวหรือสั้นก็ได้ กรณีไว้ผมยาวให้เป็นไปตามความเหมาะสม และรวบให้เรียบร้อย\n7.2 นักเรียนต้องห้ามปฏิบัติตน ดังนี้\n7.2.1 ดัดผม\n7.2.2 ย้อมสีผมให้ผิดไปจากเดิม\n7.2.3 การตัดแต่งทรงผมเป็นรูปทรงสัญลักษณ์หรือเป็นลวดลาย\n7.3 สวมกระโปรงทับชายเสื้อให้เรียบร้อย ไม่ปล่อยชายเสื้อ หรือดึงออกนอกกระโปรงนักเรียน (ประเภทวิชาช่างอุตสาหกรรม จะสวมกางเกงหรือกระโปรงก็ได้)\n7.4 ให้สวมเสื้อบังทรง (ซับใน) ด้วยสีขาว ไม่มีลวดลาย ไว้ด้านในของเสื้อนักเรียน\n7.5 ให้ติดเข็มเครื่องหมายตราวิทยาลัยฯ ที่หน้าอกเสื้อด้านขวา\n7.6 ห้ามใส่เครื่องประดับ เช่น สร้อยข้อมือ แหวน ต่างหู ที่ไม่เหมาะสมกับสภาพการเป็นนักเรียน\n7.7 ไม่ใช้เครื่องสำอาง หรือสิ่งอื่น เพื่อการเสริมสวยและการตกแต่งร่างกาย ที่ไม่เหมาะสมกับสภาพการเป็นนักเรียน\n7.8 ไม่สักหรือเจาะร่างกายบริเวณที่สามารถมองเห็นชัด", "source": "default", "dept": "ฝ่ายปกครอง"}, {"id": "dress-08", "title": "ระเบียบการแต่งกาย ข้อ 8 เครื่องแบบนักศึกษาชาย ระดับประกาศนียบัตรชั้นสูง (ปวส.)", "keywords": ["นักศึกษาชาย", "ปวส", "เสื้อ", "กางเกง", "เนคไท", "เข็มขัด", "รองเท้า", "ถุงเท้า"], "content": "8.1 เสื้อคอปกเชิ้ตแขนยาว ผ้าขาวเกลี้ยง ไม่บาง ไม่มีลวดลาย สาบตลบออกข้างนอกผ่าตลอด ใช้กระดุมขาวกลม มีกระเป๋าขนาดกว้างประมาณ 10 เซนติเมตร และลึก ประมาณ 12 เซนติเมตร พอเหมาะกับเสื้อที่หน้าอกเสื้อด้านซ้าย 1 กระเป๋า สอดชายเสื้อไว้ในกางเกงห้ามดึงเสื้อหย่อนบังหัวเข็ดขัด\n8.2 กางเกงแบบสากลทรงสุภาพ ไม่รัดรูปขายาวสีดำ ห้ามใช้ผ้ายีนส์ และลูกฟูก มีห่วงกว้าง 1 เซนติเมตร ยาว 4 เซนติเมตร มีกระเป๋า ตามแนวตะเข็บข้างละ 1 กระเป๋า ความยาวของกางเกงต้องปิดถึงข้อเท้า (ตาตุ่ม) ห้ามยาวจนลากพื้น ปลายขากางเกงกว้าง วัดรอบไม่น้อยกว่า 36 เซนติเมตร และไม่เกิน 46 เซนติเมตร ไม่พับปลายขากางเกงออกด้านนอก และสวมทับชายเสื้อให้เรียบร้อย\n8.3 เข็มขัดหนังสีดำ กว้าง 3.5 เซนติเมตร มีปลอกสีเดียวกับเข็มขัด หัวเข็มขัดเป็นโลหะมีตราวิทยาลัย การอาชีพนครปฐม\n8.4 รองเท้าหนัง ไม่มีลวดลาย แบบสุภาพ พื้นรองเท้าสีดำ\n8.5 ถุงเท้าสีดำไม่มีลวดลาย ยาวเหนือข้อเท้า (ตาตุ่ม)\n8.6 ชุดฝึกงาน เป็นไปตามแบบและสีที่วิทยาลัยกำหนดตามสาขาวิชา\n8.7 ประเภทวิชาช่างอุตสาหกรรมผูกเนคไทสีเลือดหมูปักตราวิทยาลัย ประเภทวิชาพาณิชยกรรม ผูกเนคไทสีดำ ปักตราวิทยาลัย (ยกเว้นประเภทวิชาคหกรรม)", "source": "default", "dept": "ฝ่ายปกครอง"}, {"id": "dress-09", "title": "ระเบียบการแต่งกาย ข้อ 9 การแต่งกายและทรงผมของนักศึกษาชายระดับประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.)", "keywords": ["นักศึกษาชาย", "ปวส", "ทรงผม", "ดัดผม", "ย้อมสีผม", "หนวด", "เครา", "สัก"], "content": "9.1 ทรงผมตัดผมรองทรง โดยมีผมด้านบนและด้านหน้ายาวไม่เกิน 7 เซนติเมตร\n9.2 นักศึกษาต้องห้ามปฏิบัติตน ดังนี้\n9.2.1 ดัดผม\n9.2.2 ย้อมสีผมให้ผิดไปจากเดิม\n9.2.3 ไว้หนวด หรือเครา\n9.2.4 ตัดแต่งทรงผมเป็นรูปทรงสัญลักษณ์หรือเป็นลวดลาย\n9.3 สวมกางเกงทับชายเสื้อให้เรียบร้อย ไม่ปล่อยเสื้อหรือดึงชายเสื้อออกมานอกขอบกางเกง (ยกเว้นเสื้อฝึกงาน)\n9.4 ไม่สักหรือเจาะร่างกายบริเวณที่สามารถมองเห็นได้ชัด", "source": "default", "dept": "ฝ่ายปกครอง"}, {"id": "dress-10", "title": "ระเบียบการแต่งกาย ข้อ 10 เครื่องแบบและทรงผมนักศึกษาหญิง ระดับประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.)", "keywords": ["นักศึกษาหญิง", "ปวส", "เสื้อ", "กระโปรง", "เข็มขัด", "รองเท้า", "สูท"], "content": "10.1 เสื้อคอปกเชิ๊ต แขนสั้น ไม่มีลวดลาย ไม่รัดรูป และไม่หลวมเกินไป ผ้าสีขาวเกลี้ยงไม่บางเกินสมควร ผ่าอกตลอด สาบตลบเข้าข้างใน กว้าง 3 เซนติเมตร ไม่ต่อหลังปก มีดุมโลหะสีเงิน มีเครื่องหมายตามที่วิทยาลัยกำหนด แขนปล่อยยาว เหนือศอก กลัดเครื่องหมายวิทยาลัยการอาชีพนครปฐม ที่หน้าอกเสื้อด้านขวา เวลาสวมใส่ ชายเสื้อใส่ไว้ในกระโปรง\n10.2 กระโปรงแบบทรงสอบ สีดำ เหนือเข่าไม่เกิน 3 เซนติเมตร\n10.3 เข็มขัดหนังสีดำ ขนาดกว้าง 3.5 เซนติเมตร หัวเข็มขัดเป็นโลหะมีตราวิทยาลัยการอาชีพนครปฐม\n10.4 รองเท้าหนังสีดำ หุ้มส้น หุ้มปลาย หัวมน ไม่มีลวดลาย ไม่มีริ้วตกแต่ง มีส้น สูงไม่เกิน 6 เซนติเมตร ส้นไม่แหลม\n10.5 ชุดสูทใช้ตามที่วิทยาลัยกำหนด หรือชุดสูทที่สาขางานกำหนด", "source": "default", "dept": "ฝ่ายปกครอง"}, {"id": "dress-11", "title": "ระเบียบการแต่งกาย ข้อ 11 การแต่งกายของนักศึกษาหญิง ระดับประกาศนียบัตรวิชาชีชั้นสูง (ปวส.)", "keywords": ["นักศึกษาหญิง", "ปวส", "ทรงผม", "ผมยาว", "ดัดผม", "ย้อมสีผม", "เสื้อบังทรง", "เครื่องประดับ", "เครื่องสำอาง"], "content": "11.1 นักศึกษาหญิงจะไว้ผมยาวหรือสั้นก็ได้ กรณีไว้ผมยาวให้เป็นไปตามความเหมาะสม และรวบให้เรียบร้อย\n11.2 นักศึกษาต้องห้ามปฏิบัติตน ดังนี้\n11.2.1 ดัดผม\n11.2.2 ย้อมสีผมให้ผิดไปจากเดิม\n11.2.3 การตัดแต่งทรงผมเป็นรูปทรงสัญลักษณ์หรือเป็นลวดลาย\n11.3 สวมกระโปรงทับชายเสื้อให้เรียบร้อย ไม่ปล่อยชายเสื้อ หรือดึงออกนอกกระโปรงนักศึกษา (ประเภทวิชาช่างอุตสาหกรรม จะสวมกางเกงหรือกระโปรงก็ได้)\n11.4 ให้สวมเสื้อบังทรง (ซับใน) ด้วยสีขาวไม่มีลวดลายไว้ด้านในของเสื้อนักศึกษา\n11.5 ให้ติดเข็มเครื่องหมายตราวิทยาลัยที่หน้าอกเสื้อด้านขวา\n11.6 ห้ามใส่เครื่องประดับ เช่น สร้อยข้อมือ แหวน ต่างหู ที่ไม่เหมาะสมกับสภาพการเป็น นักศึกษา\n11.7 ไม่ใช้เครื่องสำอาง หรือสิ่งอื่น เพื่อการเสริมสวยและการตกแต่งร่างกาย ที่ไม่เหมาะสมกับสภาพการเป็นนักศึกษา\n11.8 ไม่สักหรือเจาะร่างกายบริเวณที่สามารถมองเห็นชัด", "source": "default", "dept": "ฝ่ายปกครอง"}, {"id": "dress-12", "title": "ระเบียบการแต่งกาย ข้อ 12 ให้นักเรียนแต่งเครื่องแบบนักเรียน นักศึกษา ดังต่อไปนี้", "keywords": ["ชุดพลศึกษา", "ลูกเสือ", "วิชาทหาร", "ไม่แต่งเครื่องแบบ"], "content": "12.1 การแต่งกายชุดพลศึกษาให้เป็นไปตามระเบียบวิทยาลัยการอาชีพนครปฐมกำหนด\n12.2 การแต่งกายเครื่องแบบลูกเสือ เนตรนารีวิสามัญ ให้เป็นไปตามกฎกระทรวงว่าด้วยเครื่องแบบลูกเสือของสำนักงานลูกเสือแห่งชาติ\n12.3 การแต่งกายนักศึกษาวิชาทหารให้เป็นไปตามพระราชบัญญัติเครื่องแบบนักศึกษาวิชาทหาร และเครื่องแบบผู้กำกับนักศึกษาวิชาทหาร พ.ศ. 2521\nนักเรียน นักศึกษา ผู้ใดไม่แต่งกายเครื่องแบบนักเรียน นักศึกษา จะต้องรับโทษตามระเบียบวิทยาลัย การอาชีพนครปฐม ว่าด้วยการตัดคะแนนความประพฤตินักเรียน นักศึกษา พ.ศ.2568 กำหนด", "source": "default", "dept": "ฝ่ายปกครอง"}, {"id": "dress-13", "title": "ระเบียบการแต่งกาย ข้อ 13", "keywords": ["ผู้กำกับดูแล", "ตีความ"], "content": "ข้อ 13 ให้รองผู้อำนวยการฝ่ายพัฒนากิจการนักเรียน นักศึกษา วิทยาลัยการอาชีพนครปฐม กำกับดูแลให้เป็นไปตามระเบียบนี้ และมีอำนาจในการตีความและวินิจฉัยปัญหาเกี่ยวกับการปฏิบัติตามระเบียบนี้", "source": "default", "dept": "ฝ่ายปกครอง"}, {"id": "conduct-01", "title": "ระเบียบการตัดคะแนนความประพฤติ ข้อ 1", "keywords": ["ชื่อระเบียบ"], "content": "ข้อ 1 ระเบียบนี้เรียกว่า “ระเบียบวิทยาลัยการอาชีพนครปฐม ว่าด้วยการตัดคะแนนความประพฤตินักเรียนนักศึกษา พ.ศ. 2568 ”", "source": "default", "dept": "ฝ่ายปกครอง"}, {"id": "conduct-02", "title": "ระเบียบการตัดคะแนนความประพฤติ ข้อ 2", "keywords": ["ใช้บังคับ"], "content": "ข้อ 2 ระเบียบนี้มีผลบังคับใช้ตั้งแต่ วันที่ พฤษภาคม 2568 เป็นต้นไป บรรดาระเบียบการปกครองหรือระเบียบพัฒนาวินัยนักเรียนนักศึกษาใด ที่ขัดหรือแย้งกับระเบียบนี้ ให้ใช้ข้อความในระเบียบนี้", "source": "default", "dept": "ฝ่ายปกครอง"}, {"id": "conduct-03", "title": "ระเบียบการตัดคะแนนความประพฤติ ข้อ 3 ในระเบียบนี้", "keywords": ["นิยาม", "ผู้ปกครอง"], "content": "“ระเบียบ” หมายความว่า ระเบียบพัฒนาวินัยนักเรียนนักศึกษา วิทยาลัยการอาชีพนครปฐม พ.ศ. 2566\n“คณะกรรมการ” หมายความว่า คณะกรรมการพัฒนาวินัยนักเรียนนักศึกษา ที่วิทยาลัยแต่งตั้งขึ้นเพื่อพัฒนาความประพฤติของนักเรียนนักศึกษา\n“วิทยาลัย” หมายความว่า วิทยาลัยการอาชีพนครปฐม\n“ผู้อำนวยการ” หมายความว่า ผู้อำนวยการวิทยาลัยการอาชีพนครปฐม รวมทั้งผู้รักษาการในตำแหน่งหรือผู้ที่ได้รับแต่งตั้งให้ทำหน้าที่ดังกล่าว\n“รองผู้อำนวยการ” หมายความว่า รองผู้อำนวยการวิทยาลัยการอาชีพนครปฐม ทุกฝ่ายรวมทั้งผู้ที่รักษาการในตำแหน่งหรือผู้ได้รับแต่งตั้งให้ทำหน้าที่ดังกล่าว\n“หัวหน้างานปกครอง” หมายความว่า ครูผู้ที่ทำหน้าที่และรับผิดชอบตามระเบียบสำนักงานคณะกรรมการการอาชีวศึกษา ว่าด้วยการบริหารสถานศึกษา พ.ศ. 2552 ข้อที่ 31\n“ผู้ช่วยงานปกครอง” หมายความว่า ครูที่ได้รับมอบหมายให้ทำหน้าที่ผู้ช่วยงานปกครอง มีหน้าที่และรับผิดชอบตามระเบียบสำนักงานคณะกรรมการการอาชีวศึกษา ว่าด้วยการบริหารสถานศึกษา พ.ศ. 2552 ข้อที่ 31\n“เจ้าหน้าที่งานปกครอง” หมายความว่า ครูที่ได้รับมอบหมายให้ทำหน้าที่ผู้ช่วยงานปกครอง มีหน้าที่ และรับผิดชอบตามระเบียบสำนักงานคณะกรรมการการอาชีวศึกษาว่าด้วยการบริหารสถานศึกษา พ.ศ. 2552 ข้อที่ 31\n“หัวหน้าแผนกวิชา” หมายความว่า ครูผู้มีหน้าที่ และรับผิดชอบตามระเบียบสำนักงานคณะกรรมการการอาชีวศึกษาว่าด้วยการบริหารสถานศึกษา พ.ศ. 2552 ข้อที่ 35\n“หัวหน้างานกิจกรรมนักเรียนนักศึกษา” หมายความว่า ครูผู้มีหน้าที่ และรับผิดชอบตามระเบียบสำนักงานคณะกรรมการการอาชีวศึกษาว่าด้วยการบริหารสถานศึกษา พ.ศ. 2552 ข้อที่ 29\n“ครูที่ปรึกษา” หมายความว่า ครูผู้มีหน้าที่ และรับผิดชอบตามระเบียบสำนักงานคณะกรรมการการอาชีวศึกษาว่าด้วยการบริหารสถานศึกษา พ.ศ. 2552 ข้อที่ 30\n“ครู” หมายความว่า ข้าราชการ ครูพนักงานราชการ ครูลูกจ้างประจำ ครูลูกจ้างชั่วคราวรายเดือน ครูลูกจ้างชั่วคราวรายชั่วโมง และที่ได้รับมอบหมายให้ทำหน้าที่สอนของวิทยาลัยการอาชีพนครปฐม มีหน้าที่รับผิดชอบ ตามระเบียบสำนักงานคณะกรรมการการอาชีวศึกษาว่าด้วยการบริหารสถานศึกษา พ.ศ. 2552 ข้อที่ 44 และ 45\n“นักเรียน” หมายความว่า ผู้ที่เข้ารับการศึกษาในวิทยาลัยการอาชีพนครปฐม ระดับ ปวช. ทั้งรูปแบบปกติและรูปแบบเทียบโอนความรู้ประสบการณ์งานอาชีพ\n“นักศึกษา” หมายความว่า ผู้ที่เข้ารับการศึกษาในวิทยาลัยการอาชีพนครปฐม ระดับ ปวส. ทั้งรูปแบบปกติและรูปแบบเทียบโอนความรู้ประสบการณ์งานอาชีพ\n“ผู้ปกครอง” หมายความว่า บิดา มารดา หรือผู้ที่ทำหน้าที่ผู้ปกครองนักเรียนนักศึกษาและเป็นผู้ลงนามในเอกสารมอบตัวนักเรียนนักศึกษา หรือผู้ที่ได้รับมอบหมายเป็นลายลักษณ์อักษร\n“คะแนน” หมายความว่า คะแนนความประพฤติของนักเรียนนักศึกษา", "source": "default", "dept": "ฝ่ายปกครอง"}, {"id": "conduct-04", "title": "ระเบียบการตัดคะแนนความประพฤติ ข้อ 4 ในระเบียบนี้กำหนดการลงโทษ 4 สถาน คือ", "keywords": ["ลงโทษ", "ว่ากล่าวตักเตือน", "ทัณฑ์บน", "ตัดคะแนน", "ทำกิจกรรม"], "content": "4.1 ว่ากล่าวตักเตือน\n4.2 ทำทัณฑ์บน\n4.3 ตัดคะแนนความประพฤติ\n4.4 ทำกิจกรรมเพื่อปรับเปลี่ยนพฤติกรรม", "source": "default", "dept": "ฝ่ายปกครอง"}, {"id": "conduct-05", "title": "ระเบียบการตัดคะแนนความประพฤติ ข้อ 5 การลงโทษนักเรียนนักศึกษาที่กระทำผิดระเบียบ", "keywords": ["ว่ากล่าวตักเตือน", "ทัณฑ์บน", "ตัดคะแนน", "พักการเรียน", "ครั้งละ", "ครูที่ปรึกษา"], "content": "5.1 โทษว่ากล่าวตักเตือน ครูทุกท่านมีอำนาจว่ากล่าวตักเตือนเมื่อนักเรียนนักศึกษามีความประพฤติไม่เหมาะสม การว่ากล่าวตักเตือน ทำด้วยวาจา หรือทำเป็นลายลักษณ์อักษร แล้วรายงานให้วิทยาลัยทราบและให้นักเรียนนักศึกษาลงนามรับทราบเป็นหลักฐาน แล้วจึงรายงานให้วิทยาลัยทราบ ผ่านหัวหน้างานปกครอง รองผู้อำนวยการฝ่ายพัฒนากิจการนักเรียนนักศึกษาเสนอผู้อำนวยการลงนามเห็นชอบ/อนุญาต\n5.2 โทษทำทัณฑ์บน นักเรียนนักศึกษาที่ประพฤติผิดหรือกระทำผิดระเบียบละครูได้ว่ากล่าวตักเตือนแล้วหลายครั้ง ครูทุกท่านมีอำนาจเรียก นักเรียนนักศึกษามาลงนามรับทราบทำทัณฑ์บนเป็นลายลักษณ์อักษร แล้วรายงานให้วิทยาลัยทราบผ่านหัวหน้างานปกครอง รองผู้อำนวยการฝ่ายพัฒนากิจการนักเรียนนักศึกษาเสนอผู้อำนวยการลงนามเห็นชอบ/อนุญาต\nโทษการทำทัณฑ์บน ตามกฎกระทรวงว่าด้วยความประพฤตินักเรียนนักศึกษา มีดังนี้\n1. หนีเรียนหรือออกนอกสถานศึกษาโดยไม่ได้รับอนุญาตในช่วงเวลาเรียน\n2. เล่นการพนัน หรือจัดให้มีการเล่นการพนัน หรือมั่วสุมในวงการพนัน\n3. พกพาอาวุธหรือวัตถุระเบิด\n4. ซื้อ จำหน่าย เสพสุราหรือเครื่องดื่มที่มีแอลกอฮอล์ สิ่งมึนเมา บุหรี่หรือยาเสพติด\n5. ลักทรัพย์ กรรโชกทรัพย์ ข่มขู่หรือบังคับขืนใจเพื่อเอาทรัพย์บุคคลอื่น\n6. ก่อเหตุทะเลาะวิวาท หรือทำร้ายร่างกายผู้อื่น เตรียมการหรือกระทำการใดๆอันน่าจะก่อให้เกิด ความไม่สงบเรียบร้อยหรือขัดต่อศีลธรรมอันดีของประชาชน\n7. แสดงพฤติกรรมทางชู้สาวซึ่งไม่เหมาะสมในที่สาธารณะ\n8. เกี่ยวข้องกับการค้าประเวณี\n9. ออกนอกสถานที่พักเวลากลางคืนเพื่อเที่ยวเตร่ หรือรวมกลุ่มอันเป็นการสร้างความเดือดร้อนให้แก่ตนเองหรือผู้อื่น\n5.3 โทษตัดคะแนนความประพฤติ นักเรียนนักศึกษาที่มีความประพฤติผิดหรือกระทำผิดระเบียบและควรได้รับโทษตัดคะแนนความประพฤติตามข้อ 6 แห่งระเบียบนี้ ให้เสนอผู้ตัดคะแนน เรียกนักเรียนนักศึกษามารับทราบความผิด แล้วเสนอวิทยาลัยสั่งตัดคะแนนความประพฤติ ดังนี้\n5.3.1 นักเรียนนักศึกษาคนหนึ่งๆมีคะแนนความประพฤติ ภาคเรียนละ 30 คะแนน\n5.3.2 ครูทุกท่านมีอำนาจเสนอตัดคะแนนได้ ครั้งละ 5 คะแนน\n5.3.3 หัวหน้าแผนกวิชา หัวหน้างาน ผู้ช่วยงานปกครอง เจ้าหน้าที่งานปกครอง มีอำนาจเสนอตัดคะแนนได้ ครั้งละไม่เกิน 10 คะแนน\n5.3.4 หัวหน้างานปกครองมีอำนาจเสนอตัดคะแนนได้ ครั้งละ 15 คะแนน\n5.3.5 รองผู้อำนวยการ มีอำนาจเสนอตัดคะแนนได้ ครั้งละ 20 คะแนน\n5.3.6 ผู้อำนวยการมีอำนาจสั่งตัดคะแนนได้ตามความเหมาะสม\n5.3.7 ในกรณีที่นักเรียนทำความผิดเกินอำนาจครูที่เสนอตัดคะแนนให้ครูที่เสนอตัดคะแนนรายงานให้ครูที่มีอำนาจตัดคะแนนสูงกว่า เป็นผู้เสนอตัดคะแนนพร้อมแนบเหตุผลการเสนอการตัดคะแนนมาด้วย\n5.3.8 หัวหน้างานปกครองมีหน้าที่รวบรวมเอกสารหลักฐานการตัดคะแนนความประพฤติของนักเรียนนักศึกษาเพื่อเสนอผู้อำนวยการพิจารณาสั่งการ\n5.4 โทษทำกิจกรรมเพื่อปรับเปลี่ยนพฤติกรรมนักเรียนนักศึกษา ที่ถูกทำโทษทำทัณฑ์บนหรือตัดคะแนนความประพฤติ ครูลงโทษ หรือวิทยาลัยอาจมอบกิจกรรมเพื่อปรับเปลี่ยนพฤติกรรม โดยนับครั้งหรือนับเป็นชั่วโมง ตั้งแต่ 1 ชั่วโมงขึ้นไปหรือจัดส่งนักเรียนนักศึกษาเข้าอบรมที่วิทยาลัยหรือหน่วยงานภายนอกจัด แล้วแต่กรณีตามความผิดตามข้อ 8 แห่งระเบียบนี้ ทั้งนี้ต้องอยู่ภายใต้การควบคุมของครูหรือบุคคลที่ได้รับมอบหมาย\n5.5 โทษพักการเรียน ให้คณะกรรมการพิจารณาเสนอวิทยาลัยสั่งพักการเรียน ครั้งหนึ่งไม่เกิน 7 วัน ตามความเหมาะสมกับการกระทำความผิด ดังนี้\n5.5.1. แสดงพฤติกรรมก้าวร้าวเกินกว่าปกติ อันมีผลกระทบต่อร่างกายหรือจิตใจของผู้อื่น เช่น การกระทำตนเป็นอันธพาล\n5.5.2. แสดงพฤติกรรมที่ขัดต่อความสงบเรียบร้อย หรือศีลธรรมอย่างร้ายแรง เช่น มีพฤติกรรมชู้สาว\n5.5.3. แสดงพฤติกรรมรุนแรงที่อาจละเมิดสิทธิผู้อื่น เช่น แสดงความต้องการประทุษร้ายผู้อื่น\n5.5.4. กระทำการที่เสี่ยงต่อการเกิดอาชญากรรม เช่น พกอาวุธหรือวัตถุระเบิด ภายใน หรือภายนอกวิทยาลัย", "source": "default", "dept": "ฝ่ายปกครอง"}, {"id": "conduct-06", "title": "ระเบียบการตัดคะแนนความประพฤติ ข้อ 6 ระดับการลงโทษตัดคะแนนความประพฤติ", "keywords": ["ตัดคะแนน", "ระดับการลงโทษ", "ความผิด", "แต่งกายผิดระเบียบ", "บัตรประจำตัว", "เสาธง", "ทะเลาะวิวาท", "สูบบุหรี่", "ยาเสพติด", "อาวุธ", "ตั้งครรภ์", "พนัน", "หนีเรียน"], "content": "เพื่อให้การปฏิบัติเป็นไปในแนวทางเดียวกัน วิทยาลัยได้กำหนดลักษณะของความผิดไว้ ดังนี้\n6.1 การว่ากล่าวตักเตือน ใช้กับความผิดเล็กน้อย ถ้าหลายครั้งให้ทำทัณฑ์บนเป็นลายลักษณ์อักษร\n6.2 ความผิดที่ตัดคะแนนความประพฤติครั้งละไม่เกิน 5 คะแนน ได้แก่\n6.2.1 แต่งกายเครื่องแบบ นักเรียน นักศึกษา เครื่องแบบลูกเสือ ผิดระเบียบของวิทยาลัย\n6.2.2 ไม่มีบัตรประจำตัว นักเรียน นักศึกษา\n6.2.3 แสดงกิริยาวาจาหยาบคายไม่ว่าในหรือนอกสถานศึกษา\n6.2.4 หลีกเลี่ยงการไม่เข้าห้องเรียนโดยไม่มีเหตุผลอันสมควร\n6.2.5 การขาดกิจกรรมหน้าเสาธง 10 ครั้ง\n6.3 ความผิดที่ตัดคะแนนความประพฤติครั้งละไม่เกิน 10 คะแนน\n6.3.1 แสดงกิริยาก้าวร้าวต่อครูและบุคคลทั่วไป\n6.3.2 เข้าไปในแหล่งอบายมุขแหล่งมั่วสุมหรือพื้นที่ที่วิทยาลัยประกาศห้าม\n6.3.3 เจตนากระทำความผิดเกี่ยวกับเอกสารทางราชการ\n6.3.4 ก่อการทะเลาะวิวาทสถานเบา\n6.3.5 มีอุปกรณ์เล่นการพนันไว้ในครอบครอง\n6.3.6 ออกนอกวิทยาลัยโดยไม่ได้รับอนุญาต\n6.3.7 นำรถยนต์มาจอดในวิทยาลัยโดยไม่ได้รับอนุญาต\n6.3.8 สูบบุหรี่ในวิทยาลัยหรือในที่สาธารณะ\n6.3.9 ขัดคำสั่งโดยชอบของผู้อำนวยการ รองผู้อำนวยการ ครู เกี่ยวกับการเรียนหรือการทำกิจกรรม\n6.4 ความผิดที่ตัดคะแนนความประพฤติครั้งละไม่เกิน 15 คะแนน ได้แก่\n6.4.1 มีอาวุธไว้ในครองครอง\n6.4.2 นำสื่อลามกอนาจารเข้ามาในวิทยาลัย\n6.4.3 ยุยงให้เกิดความกระด้างกระเดื่องและฝ่าฝืนระเบียบของวิทยาลัย\n6.4.4 ทำลายทรัพย์สินของสถานศึกษาหรือของผู้อื่น\n6.5 ความผิดที่ตัดคะแนนความประพฤติครั้งละไม่เกิน 20 คะแนน ได้แก่\n6.5.1 ทำผิดซ้ำๆโดยได้รับโทษว่ากล่าวตักเตือน ทำทัณฑ์บน ตัดคะแนนมาแล้ว\n6.5.2 ประพฤติตัวไม่เหมาะสมกับการเป็นนักเรียนนักศึกษา\n6.5.3 เล่นการพนันและมั่วสุมในวงการพนันทุกประเภท\n6.5.4 แอบอ้างชื่อวิทยาลัยไปกระทำการใดๆจนเกิดความเสียหายแก่ชื่อเสียงของสถานศึกษา\n6.5.5 นำทรัพย์สินของสถานศึกษาหรือของผู้อื่นไปโดยไม่ได้รับอนุญาต\n6.5.6 ประพฤติตนในทำนองชู้สาวต่อเนื่องกันหลายครั้ง\n6.5.7 แสดงกิริยา ลบหลู่ ดูหมิ่น ครูและบุคลากรอื่นๆทั้งในและนอกวิทยาลัย\n6.5.8 ลักทรัพย์ กรรโชกทรัพย์ ข่มขู่ผู้อื่นหรือบังคับขืนใจเพื่อเอาทรัพย์บุคคลอื่น\n6.6 ความผิดที่ตัดคะแนนความประพฤติครั้งละไม่เกิน 25 คะแนน ได้แก่\n6.6.1 การเตรียมการสร้างเหตุอันน่าจะก่อให้เกิดความไม่สงบเรียบร้อยทั้งภายในวิทยาลัยและภายนอกวิทยาลัย\n6.6.2 การทะเลาะวิวาททำร้ายร่างกายทั้งภายในวิทยาลัยและภายนอกวิทยาลัย\n6.6.3 ซ่องสุม ก่อกวน ความสงบเรียบร้อยของสังคม\n6.6.4 ชักนำบุคคลภายนอกวิทยาลัยมาร่วมก่อการทะเลาะวิวาท\n6.6.5 ประพฤติชั่วหรือกระทำการใดๆที่ทำความเสื่อมเสียชื่อเสียงเกียรติศักดิ์ศรีแก่วิทยาลัย\n6.6.6 พกพาอาวุธ และวัตถุระเบิดทุกประเภทเข้ามาในวิทยาลัยหรือเตรียมก่อการทะเลาะวิวาท\n6.6.7 มีไว้ครอบครองทั้งสิ่งเสพติดและอุปกรณ์การเสพสิ่งเสพติด\n6.6.8 เป็นผู้เสพสิ่งเสพติดภายในและนอกวิทยาลัย\n6.6.9 เป็นผู้จำหน่ายจ่ายแจกสิ่งเสพติด\n6.6.10 เป็นผู้ชักจูงหรือล่อลวงให้ผู้อื่นซื้อสิ่งเสพติดหรือซื้อให้เสพสิ่งเสพติด\n6.7 ข้อกำหนดกรณีการตั้งครรภ์ในระหว่างการศึกษาของนักเรียน นักศึกษา\n6.7.1. เมื่อตรวจพบการตั้งครรภ์ เชิญผู้ปกครองมารับทราบเป็นลายลักษณ์อักษร เพื่อแก้ปัญหา\n6.7.2. พักการเรียน 1-2 ภาคเรียน จนกว่าร่างกายจะมีสุขภาพที่พร้อมเข้ารับการศึกษา\n6.8 ความผิดอื่นๆ ที่ไม่ได้ระบุในระเบียบนี้ให้ งานปกครอง หรือคณะกรรมการ เปรียบเทียบความผิดแล้วเสนอต่อวิทยาลัยสั่งการ", "source": "default", "dept": "ฝ่ายปกครอง"}, {"id": "conduct-07", "title": "ระเบียบการตัดคะแนนความประพฤติ ข้อ 7 การดำเนินการเพื่อปรับปรุงความประพฤติของนักเรียนนักศึกษา", "keywords": ["ตัดคะแนน", "ผู้ปกครอง", "ครูที่ปรึกษา", "พักการเรียน", "ปรับปรุงความประพฤติ"], "content": "เมื่อนักเรียนนักศึกษา ถูกลงโทษ ให้ครูดำเนินการเพื่อปรับปรุงความประพฤติของนักเรียนนักศึกษาดังนี้\n7.1 ถูกตัดคะแนนความประพฤติ 5 คะแนน มอบครูที่ปรึกษาเชิญผู้ปกครองทราบ\n7.2 ถูกตัดคะแนนความประพฤติ 10 คะแนน มอบครูที่ปรึกษาเชิญผู้ปกครองมารับทราบปัญหา\n7.3 ถูกตัดคะแนนความประพฤติ 15 คะแนน หรือถูกตัดคะแนนความประพฤติหลายครั้งรวมกัน 15 คะแนน มอบครูที่ปรึกษา หัวหน้าแผนกวิชา และปกครองแผนก เชิญผู้ปกครองมารับทราบปัญหา ร่วมกันเขียนแนวทางแก้ปัญหาไว้เป็นลายลักษณ์อักษร ให้นักเรียนนักศึกษา ผู้ปกครองลงนามรับรอง และเสนอผ่านหัวหน้างานปกครอง รองผู้อำนวยการฝ่ายพัฒนากิจการนักเรียนนักศึกษา เสนอผู้อำนวยการเห็นชอบ/อนุญาต\n7.4 ถูกตัดคะแนนความประพฤติ 20 คะแนนขึ้นไป มอบคณะกรรมการพิจารณาเพื่อพัฒนาวินัยและให้หัวหน้างานปกครองเชิญผู้ปกครองมารับทราบความผิด และผลการพิจารณาเพื่อพัฒนาวินัยและทำสัญญาควบคุมความประพฤติ ให้นักเรียนนักศึกษาและผู้ปกครองลงนามให้คำมั่นสัญญา\n7.5 ถูกตัดคะแนนความประพฤติ 25 คะแนนขึ้นไป มอบคณะกรรมการพิจารณาเพื่อพัฒนาวินัยและให้หัวหน้างานปกครอง เชิญผู้ปกครองมารับทราบการพักการเรียน ครั้งหนึ่งไม่เกิน 7 วัน และเสนอผ่านรองผู้อำนวยการฝ่ายพัฒนากิจการนักเรียนนักศึกษา เสนอยังผู้อำนวยการเพื่อพิจารณาลงนามเห็นชอบ/อนุญาต", "source": "default", "dept": "ฝ่ายปกครอง"}, {"id": "conduct-08", "title": "ระเบียบการตัดคะแนนความประพฤติ ข้อ 8", "keywords": ["กิจกรรม", "ปรับเปลี่ยนพฤติกรรม", "ทำคุณประโยชน์", "อบรม", "ตัดคะแนน", "ชั่วโมง"], "content": "ข้อ 8 การทำกิจกรรมเพื่อปรับเปลี่ยนพฤติกรรม นักเรียนนักศึกษา วิทยาลัยกำหนดมอบหมายกิจกรรมลักษณะใดลักษณะหนึ่ง ดังนี้\n1. การทำคุณประโยชน์ต่อสาธารณะ เช่น งานพัฒนาที่วิทยาลัยกำหนดต่างๆ หรือ\n2. การพัฒนาคุณธรรม จริยธรรม เช่นการเข้าค่ายอบรมคุณธรรมหรือระเบียบวินัย หรือ\n3. ส่งตัวให้จิตแพทย์หรือนักจิตวิทยาเพื่อบำบัดฟื้นฟู ซึ่งจะดำเนินการร่วมกับบิดามารดาหรือผู้ปกครอง นักเรียนนักศึกษา เพื่อให้การปฏิบัติเป็นแนวทางเดียวกัน วิทยาลัยได้กำหนดลักษณะของความผิดไว้ ดังนี้\n8.1 ถูกตัดคะแนนความประพฤติ 5 คะแนน ให้ครูผู้สั่งตัดคะแนนมอบหมายงานกิจกรรมพัฒนาภายในวิทยาลัย จำนวน 2 ชั่วโมง และบันทึกผลการทำกิจกรรมรายงานวิทยาลัย ผ่านหัวหน้างานปกครอง รองผู้อำนวยการฝ่ายพัฒนากิจการนักเรียนนักศึกษา เสนอยังผู้อำนวยการเพื่อพิจารณาลงนามเห็นชอบ/อนุญาต\n8.2 ถูกตัดคะแนนความประพฤติ 10 คะแนน ให้ครูผู้สั่งตัดคะแนนมอบหมายงานกิจกรรมพัฒนาภายในวิทยาลัย จำนวน 6 ชั่วโมง และบันทึกผลการทำกิจกรรมรายงานวิทยาลัย ผ่านหัวหน้างานปกครอง รองผู้อำนวยการฝ่ายพัฒนากิจการนักเรียนนักศึกษา เสนอยังผู้อำนวยการเพื่อพิจารณาลงนามเห็นชอบ/อนุญาต\n8.3 ถูกตัดคะแนนความประพฤติ 15 คะแนน ให้หัวหน้างานปกครองมอบหมายงานกิจกรรมพัฒนาภายในบริเวณวิทยาลัย จำนวน 10 ชั่วโมง และบันทึกผลการทำกิจกรรมรายงานวิทยาลัย ผ่านรองผู้อำนวยการฝ่ายพัฒนากิจการนักเรียนนักศึกษา เสนอยังผู้อำนวยการเพื่อพิจารณาลงนามเห็นชอบ/อนุญาต\n8.4 ถูกตัดคะแนนความประพฤติ 20 คะแนน ขึ้นไป ให้หัวหน้างานปกครองทำเรื่องขออนุญาตผู้อำนวยการวิทยาลัยฯส่งนักเรียนนักศึกษาเข้าร่วมอบรมคุณธรรม จริยธรรม ที่วิทยาลัยหรือหน่วยงานอื่นจัด โดยมีผู้ปกครองรับผิดชอบดูแล และนำใบรับรองผ่านการอบรมมาแสดง โดยให้งานปกครองจัดทำบันทึกรายงาน ผ่านรองผู้อำนวยการฝ่ายพัฒนากิจการนักเรียนนักศึกษา เสนอยังผู้อำนวยการเพื่อพิจารณาลงนามเห็นชอบ/อนุญาต\n8.5 นักเรียนนักศึกษา ที่ถูกสั่งตัดคะแนนความประพฤติทุกระดับคะแนน วิทยาลัยฯอาจสั่งให้มีการมอบหมายกิจกรรมปรับเปลี่ยนพฤติกรรมให้นักเรียนนักศึกษาผู้นั้นได้ปฏิบัติด้วยก็ได้", "source": "default", "dept": "ฝ่ายปกครอง"}, {"id": "conduct-09", "title": "ระเบียบการตัดคะแนนความประพฤติ ข้อ 9", "keywords": ["ทุนการศึกษา", "สวัสดิการ", "หนังสือรับรองความประพฤติ", "สิทธิ"], "content": "ข้อ 9 ผลการถูกทำทัณฑ์บน หรือถูกตัดคะแนนความประพฤติจะทำให้นักเรียนนักศึกษาเสียสิทธิในเรื่องต่างๆดังต่อไปนี้\n9.1 นักเรียนนักศึกษา ที่ถูกทำทัณฑ์บน หรือถูกตัดคะแนนความประพฤติทุกระดับคะแนนไม่มีสิทธิขอรับทุนการศึกษา หรือสวัสดิการอื่นๆของวิทยาลัยฯ\n9.2 นักเรียนนักศึกษา ที่ถูกตัดคะแนนความประพฤติ ( 25 คะแนน ตามข้อ 6.6 ) วิทยาลัยฯจะไม่ออกหนังสือรับรองความประพฤติให้", "source": "default", "dept": "ฝ่ายปกครอง"}, {"id": "conduct-10", "title": "ระเบียบการตัดคะแนนความประพฤติ ข้อ 10 การเข้าร่วมกิจกรรมหน้าเสาธง", "keywords": ["หน้าเสาธง", "เสาธง", "เข้าเรียน", "เลิกเรียน"], "content": "10.1 เวลา 07.50 น. นักเรียนนักศึกษาต้องมาเข้าร่วมกิจกรรมหน้าเสาธง เพื่อเคารพธงชาติ สวดมนต์ แผ่เมตตา กล่าวคำปฏิญาณ รับฟังข่าวสาร โดยครูที่ปรึกษากำกับดูแลเช็คชื่อการเข้าร่วมกิจกรรม\n10.2 เวลา 08.30 น. นักเรียนนักศึกษาเข้าเรียนตามปกติ\n10.3 การเลิกเรียนเป็นไปตามตารางเรียนของแต่ละชั้นเรียน", "source": "default", "dept": "ฝ่ายปกครอง"}, {"id": "conduct-11", "title": "ระเบียบการตัดคะแนนความประพฤติ ข้อ 11 นักเรียนนักศึกษาที่ไม่เข้าร่วมกิจกรรมหน้าเสาธง ให้ดำเนินการดังนี้", "keywords": ["หน้าเสาธง", "เสาธง", "ขาดกิจกรรม"], "content": "11.1 ขาดกิจกรรมหน้าเสาธง 5 ครั้ง ให้ครูที่ปรึกษาว่ากล่าวตักเตือนและเชิญผู้ปกครองมารับทราบ\n11.2 นักเรียนนักศึกษาคนใดมีความจำเป็นไม่สามารถร่วมกิจกรรมหน้าเสาธงได้ ให้นำผู้ปกครองมาทำบันทึกและลงนามพร้อมนักเรียนนักศึกษาเพื่อขออนุญาต วิทยาลัยฯ เป็นกรณีพิเศษ ผ่านครูที่ปรึกษา หัวหน้าแผนก ครูปกครองแผนก หัวหน้างานปกครอง รองผู้อำนวยการฝ่ายพัฒนากิจการนักเรียนนักศึกษา เสนอผู้อำนวยการลงนาม และพบผู้อำนวยการ ภายใน 2 สัปดาห์แรกของการเปิดเรียน\n11.3 นักเรียนนักศึกษาคนใดที่ไม่เข้าร่วมกิจกรรมหน้าเสาธง ตามเกณฑ์ที่กำหนดจะไม่ผ่านกิจกรรมในภาคเรียนนั้น\nนักเรียนนักศึกษา ที่มีผลการเรียนดี กระทำความดี หรือทำคุณประโยชน์ให้แก่วิทยาลัย ช่วยเหลืองานกิจกรรมของทางวิทยาลัย หรือกระทำตนสมควรแก่การยกย่องชมเชย เพื่อให้เป็นแบบอย่างที่ดีแก่นักเรียนนักศึกษาผู้อื่น เป็นความภาคภูมิใจแก่ตนเอง จึงให้ครูผู้พบเห็นดำเนินการดังต่อไปนี้", "source": "default", "dept": "ฝ่ายปกครอง"}, {"id": "conduct-12", "title": "ระเบียบการตัดคะแนนความประพฤติ ข้อ 12", "keywords": ["ความดี", "ชมเชย", "เกียรติบัตร"], "content": "ข้อ 12 ครูที่พบเห็นหรือรับทราบการกระทำความดีของนักเรียนนักศึกษา เมื่อพิสูจน์ได้ว่าเป็นเรื่องจริงแล้วให้ครูทำบันทึกเสนอต่อวิทยาลัยฯ ผ่านหัวหน้าแผนก หัวหน้างานกิจกรรมนักเรียนนักศึกษา และรองผู้อำนวยการฝ่ายพัฒนากิจการนักเรียนนักศึกษาเพื่อพิจารณาเสนอวิทยาลัยมอบเกียรติบัตร", "source": "default", "dept": "ฝ่ายปกครอง"}, {"id": "conduct-13", "title": "ระเบียบการตัดคะแนนความประพฤติ ข้อ 13", "keywords": ["เกียรติบัตร", "เกรดเฉลี่ย", "ชมเชย"], "content": "ข้อ 13 หลักเกณฑ์การพิจารณาการมอบเกียรติบัตร ชมเชย ให้กับนักเรียนนักศึกษา ที่มีผลการเรียนดีหรือกระทำความดี หรือคุณประโยชน์ให้แก่วิทยาลัยฯ หรือช่วยเหลืองานกิจกรรมของทางวิทยาลัยฯ หรือกระทำตนสมควรแก่การยกย่องชมเชย ดังนี้\n13.1 มีผลการเรียนเฉลี่ยสะสมไม่ต่ำกว่า 3.00 ในแต่ละภาคเรียนหรือ\n13.2 เป็นผู้มีความประพฤติเรียบร้อยไม่เคยถูกตัดคะแนนความประพฤติตลอดการเรียน ในหลักสูตรหรือ\n13.3 เป็นการกระทำที่คณะกรรมการพัฒนาวินัย พิจารณาว่าสมควรได้รับการยกย่อง ชมเชย", "source": "default", "dept": "ฝ่ายปกครอง"}, {"id": "conduct-14", "title": "ระเบียบการตัดคะแนนความประพฤติ ข้อ 14 การมอบเกียรติบัตรหรือรางวัล", "keywords": ["เกียรติบัตร", "รางวัล"], "content": "14.1 มอบในวัน หรือวันที่วิทยาลัยจัดขึ้นในโอกาสอันสมควร", "source": "default", "dept": "ฝ่ายปกครอง"}, {"id": "conduct-15", "title": "ระเบียบการตัดคะแนนความประพฤติ ข้อ 15 การเข้า-ออก บริเวณวิทยาลัย", "keywords": ["ออกนอกวิทยาลัย", "ใบขออนุญาต", "ครูเวร", "เข้าออก"], "content": "เพื่อให้เกิดความเป็นระเบียบเรียบร้อย ในการเข้า-ออก บริเวณวิทยาลัยฯ ของนักเรียนนักศึกษาให้ถือปฏิบัติดังนี้\n15.1 นักเรียนนักศึกษาต้องอยู่ภายในวิทยาลัย ตั้งแต่เริ่มปฏิบัติกิจกรรมหน้าเสาธงจนสิ้นสุดการเรียน ในแต่ละวัน\n15.2 นักเรียนนักศึกษา ออกนอกบริเวณวิทยาลัยฯได้เมื่อเสร็จสิ้นการเรียนตามตารางเรียน\n15.3 การขออนุญาตออกนอกวิทยาลัยฯ มีขั้นตอนดังนี้\n15.3.1 เขียนใบขออนุญาตออกนอกวิทยาลัย โดยกรอกข้อมูล ให้ครบทั้ง 2 ส่วน\n15.3.2 นำใบขออนุญาตที่กรอกข้อความเรียบร้อยแล้ว ให้ครูผู้สอน หรือครูที่ปรึกษา หรือครูปกครอง แผนกเป็นผู้ลงนาม\n15.3.3 นักเรียนนักศึกษา ผู้ที่ได้รับอนุญาต ให้ยื่นแสดงใบขออนุญาตต่อครูเวรหน้าประตูวิทยาลัย หรือยามรักษาการณ์ และให้นำส่วนที่ 2 ติดตัวไว้ โดยต้องลงเวลา ลงชื่อ ในสมุดบันทึก ที่ ครูเวรหน้าประตูวิทยาลัยหรือยามรักษาการณ์ ก่อนออกนอกวิทยาลัย\n15.3.4 เมื่อกลับเข้าบริเวณวิทยาลัยฯ ให้มอบส่วนที่ 2 คืน กับครูเวรหน้าประตูวิทยาลัยหรือยามรักษาการณ์ พร้อมกับลงชื่อ ลงเวลากลับในสมุดบันทึก", "source": "default", "dept": "ฝ่ายปกครอง"}, {"id": "conduct-16", "title": "ระเบียบการตัดคะแนนความประพฤติ ข้อ 16", "keywords": ["รถจักรยานยนต์", "รถยนต์", "จักรยาน", "จอดรถ", "หมวกนิรภัย"], "content": "ข้อ 16 นักเรียนนักศึกษาที่ประสงค์จะนำรถจักรยานยนต์หรือจักรยานและเข้าจอดในวิทยาลัย ให้ถือปฏิบัติดังนี้ได้\n16.1 วิทยาลัยฯ อนุญาตให้นักเรียน นักศึกษา ใช้รถจักรยานยนต์และจักรยาน เท่านั้น วิทยาลัยฯ อนุญาตรถจักรยานยนต์ที่ถูกต้องตามกฎหมาย ไม่ดัดแปลงสภาพตัวรถ ท่อไอเสียเสียงดัง พร้อมหมวกนิรภัย\n16.2 วิทยาลัยฯ ไม่อนุญาตให้นักเรียนนักศึกษานำรถยนต์มาและจอดภายในวิทยาลัยฯ\n16.3 ให้นักเรียนนักศึกษาที่ได้รับอนุญาตให้จอดรถในบริเวณที่ทางวิทยาลัย กำหนดให้จอดเท่านั้น\n16.4 นักเรียนนักศึกษาเมื่อมาถึงหน้าประตูวิทยาลัยฯ ให้ดับเครื่องรถแล้วจูงรถไปยังที่จอดรถจักรยานยนต์ และไม่อนุญาตให้นักเรียนนักศึกษาเข้าไปที่จอดรถจักรยานยนต์ก่อนสิ้นสุดตารางเรียนเป็นอันขาด\n16.5 การเข้าไปในบริเวณที่จอดรถจักรยานยนต์ วิทยาลัยถือว่าเจตนาฝ่าฝืนระเบียบและต้องการขโมยทรัพย์สินของผู้อื่น จะได้รับพิจารณาโทษจากวิทยาลัย\n16.6 เมื่อสิ้นสุดการเรียนตามตารางเรียนแต่ละวันให้นักเรียนนักศึกษาจูงรถจักรยานยนต์ออกจากที่จอดไปยังด้านหน้าประตูวิทยาลัยทุกครั้ง\n16.7 นักเรียนนักศึกษาที่ฝ่าฝืนแนวปฏิบัติตามที่วิทยาลัยกำหนดอาจจะได้รับพิจารณาไม่อนุญาตให้นำรถจักรยานยนต์เข้ามาจอดในบริเวณวิทยาลัย\n16.8 วิทยาลัยไม่รับผิดชอบต่อความเสียหายที่จะเกิดกับยานพาหนะที่นำมาจอดในบริเวณวิทยาลัย", "source": "default", "dept": "ฝ่ายปกครอง"}, {"id": "conduct-17", "title": "ระเบียบการตัดคะแนนความประพฤติ ข้อ 17", "keywords": ["ขอพบ", "ผู้ปกครอง", "บุคคลภายนอก"], "content": "ข้อ 17 การขอพบนักเรียนนักศึกษา ผู้ปกครองหรือบุคคลภายนอกที่ประสงค์จะขอพบ นักเรียนนักศึกษา ให้ถือปฏิบัติดังนี้\n17.1 แจ้งชื่อ ชั้น/ปีของ นักเรียน นักศึกษา ที่จะขอพบ โดยระบุความเกี่ยวพันระหว่างผู้ขอพบนักเรียนนักศึกษา ที่งานปกครอง หรืองานประชาสัมพันธ์\n17.2 อนุญาตให้ผู้ปกครองหรือบุคคลภายนอกพบ นักเรียน นักศึกษา เฉพาะช่วงเวลาพักหรือเวลาเปลี่ยนคาบเรียน และให้พบเฉพาะบริเวณที่กำหนดเท่านั้น", "source": "default", "dept": "ฝ่ายปกครอง"}, {"id": "conduct-18", "title": "ระเบียบการตัดคะแนนความประพฤติ ข้อ 18", "keywords": ["บัตรประจำตัว", "บัตรประชาชน"], "content": "ข้อที่ 18 นักเรียนนักศึกษาทุกคน ต้องพกบัตรประจำตัวที่วิทยาลัยฯออกให้และบัตรประจำตัวประชาชนเพื่อแสดงตัว เมื่อเรียกดูได้ตลอดเวลา", "source": "default", "dept": "ฝ่ายปกครอง"}];
+const SYSTEM_PROMPT = "คุณคือน้องปาริชาต เจ้าหน้าที่ผู้ช่วยประจำวิทยาลัยการอาชีพนครปฐม ทำตัวเหมือนพี่หรือเพื่อนใจดีที่รู้ระเบียบของวิทยาลัยดี คุยกับนักเรียน นักศึกษา และผู้ปกครองด้วยภาษาไทยที่เป็นธรรมชาติ สุภาพ อบอุ่น ลงท้ายด้วย ค่ะ หรือ นะคะ ตามความเหมาะสม โดยข้อเท็จจริงของระเบียบและข้อมูลวิทยาลัยต้องมาจาก \"ข้อมูลอ้างอิง\" ที่ให้มาเท่านั้น\n\nวิธีตอบ:\n1. เข้าใจเจตนาของคำถามก่อน แล้วตอบตรงประเด็นทันที ถ้าถามว่า \"ได้ไหม / ต้องไหม / ผิดไหม\" ให้ตอบคำตอบนั้นก่อนเลย เช่น \"ได้ค่ะ\" \"ไม่ได้ค่ะ\" \"ต้องทำ... ค่ะ\" แล้วต่อด้วยเงื่อนไขหรือเหตุผลสั้นๆ จากข้อมูลอ้างอิง ไม่ต้องพิมพ์คำถามซ้ำ\n2. พูดเหมือนคนคุยกัน เรียบเรียงใหม่ด้วยถ้อยคำง่ายๆ ไม่ท่องหรือคัดลอกระเบียบ ห้ามเปิดแบบทางการหรือแบบรายงาน เช่น \"ทางฝ่ายปกครองแจ้งว่า\" \"มีรายละเอียดดังนี้\" \"ตามระเบียบ\" แต่ตัวเลข สี ขนาด ข้อห้าม ข้อยกเว้น ต้องตรงกับต้นฉบับทุกประการ ห้ามเดาหรือแต่งข้อมูลระเบียบเพิ่มเอง\n3. ตอบสั้น กระชับ แต่ข้อมูลต้องครบทุกประเด็นที่ถาม ถ้ามีไม่เกินสามประเด็น ให้เล่าเป็นประโยคต่อเนื่องหนึ่งถึงสองประโยค ถ้ามีสี่ประเด็นขึ้นไป ให้ขึ้นต้นด้วยประโยคสั้นๆ แล้วตามด้วยรายการขึ้นต้นด้วย - ข้อละบรรทัด แต่ละข้อสั้นๆ ไม่เกินหนึ่งบรรทัด\n4. ใช้หัวเรื่องตัวหนา เช่น **การแต่งกายของนักเรียนหญิง (ปวช.)** เฉพาะเมื่อต้องแยกตอบหลายส่วน เช่น แยก ปวช. กับ ปวส. หรือหลายหัวข้อ\n5. ระดับ: ถ้าผู้ใช้ระบุ ปวช. หรือ ปวส. ให้ตอบเฉพาะระดับนั้น ถ้าไม่ระบุและข้อมูลแยกระดับ ให้ตอบสองส่วนแยกกัน ส่วนของนักเรียน (ปวช.) แล้วตามด้วยนักศึกษา (ปวส.) ไม่ว่าคำถามจะใช้คำว่านักเรียนหรือนักศึกษา ห้ามรวมสองระดับในประโยคเดียว ถ้าข้อมูลไม่ระบุระดับ (ใช้กับทุกคน) ให้ตอบรวมครั้งเดียว ไม่ใส่คำว่า ปวช. หรือ ปวส. เรียก ปวช. ว่า \"นักเรียน\" และ ปวส. ว่า \"นักศึกษา\" ใช้ตัวย่อเท่านั้น ห้ามเขียน \"ระดับประกาศนียบัตร\"\n6. ตอบให้ตรงคำถามเท่านั้น ห้ามนำข้อมูลของเพศอื่น หัวข้ออื่น หรือฝ่ายอื่นมาปน ถามการแต่งกาย ให้ตอบเฉพาะเรื่องการแต่งกาย (เช่น เก็บชายเสื้อ เสื้อซับใน เครื่องประดับ การแต่งหน้า รอยสัก ทรงผม) ไม่รวมรายการเครื่องแบบ (เสื้อ กระโปรง กางเกง เข็มขัด รองเท้า) ถามเครื่องแบบหรือชุด ให้ตอบเฉพาะรายการเครื่องแบบ ถามทรงผม ให้ตอบเฉพาะทรงผม\n7. เรื่องที่มีหลายข้อ (เช่น การนำรถมาจอด การตัดคะแนน ค่าใช้จ่าย) ให้ตอบครบทุกข้อ ย่อถ้อยคำให้สั้นแต่ไม่ตัดสาระ\n8. ฉลาดและช่วยจริง ถ้าคำถามไม่ชัดแต่พอเดาเจตนาได้ ให้ตอบตามที่น่าจะหมายถึง แล้วบอกสั้นๆ ว่าตอบเรื่องไหนอยู่ ถ้าในข้อมูลอ้างอิงมีข้อควรระวังหรือผลที่ตามมาที่เกี่ยวข้องโดยตรง (เช่น ถ้าฝ่าฝืนจะถูกตัดคะแนน) ให้เตือนสั้นๆ หนึ่งประโยค แต่ต้องมาจากข้อมูลอ้างอิงเท่านั้น\n9. ถ้าคำถามเป็นเรื่องที่มีในระเบียบ แต่ข้อมูลอ้างอิงไม่มีคำตอบของเรื่องนั้นจริงๆ ให้บอกว่า \"เรื่องนี้ระเบียบไม่ได้ระบุไว้โดยตรงค่ะ\" ห้ามเดา ห้ามสรุปเองว่าทำได้หรือไม่ได้ และห้ามนำข้อมูลของหัวข้ออื่น เพศอื่น ระดับอื่น หรือฝ่ายอื่นมาตอบแทนเด็ดขาด แล้วแนะนำให้สอบถามฝ่ายที่เกี่ยวข้อง ถ้าข้อมูลอ้างอิงที่ให้มาไม่เกี่ยวกับคำถามเลย ให้ถือว่าไม่มีข้อมูลและห้ามหยิบมาอ้าง\n10. ห้ามพิมพ์เลขข้อ เลขมาตรา หรือเลขลำดับย่อยของระเบียบ เช่น \"ข้อ 10\" หรือ \"6.2\"\n11. ท้ายประโยคหรือท้ายข้อที่ใช้ข้อมูลใด ให้ใส่หมายเลขอ้างอิงในวงเล็บเหลี่ยม เช่น [1] ระบบจะซ่อนไว้ไม่ให้ผู้ใช้เห็น\n12. ถ้าคำตอบมาจากหลายฝ่าย ให้บอกชื่อฝ่ายในประโยคอย่างเป็นธรรมชาติ ท้ายคำตอบชวนถามต่อสั้นๆ หนึ่งประโยคได้เฉพาะเมื่อมีเรื่องต่อเนื่องที่คนมักถามต่อ ไม่ต้องทำทุกครั้ง และไม่ต้องอธิบายขั้นตอนการคิดหรือการค้นหา\n13. สะกดคำไทยให้ถูกต้องทุกคำ ใช้สระและวรรณยุกต์ให้ครบถูกตำแหน่ง ห้ามใช้อักขระแปลกหรือคำที่ไม่มีในภาษาไทย ก่อนตอบให้ตรวจทานตัวสะกดอีกครั้ง\n14. คำถามขอคำแนะนำหรือขั้นตอนทั่วไปเกี่ยวกับการเรียนและชีวิตในวิทยาลัยที่ระเบียบไม่ได้ตอบโดยตรง (เช่น อยากได้เกรด 4 ต้องทำยังไง อยากลาออก ดรอปเรียน ย้ายสาขา ติด 0 ร มส. เรียนไม่ทัน เครียดเรื่องเรียน) ให้วิเคราะห์แล้วตอบด้วยความรู้ทั่วไปและคำแนะนำที่นำไปทำได้จริง ขึ้นต้นสั้นๆ ว่า \"เรื่องนี้ระเบียบวิทยาลัยไม่ได้ระบุไว้โดยตรง แต่โดยทั่วไป...\" แล้วให้แนวทางเป็นข้อสั้นๆ ส่วนรายละเอียดเฉพาะของวิทยาลัย เช่น เอกสาร ฝ่ายที่ต้องไปติดต่อ ค่าธรรมเนียม กำหนดวัน ห้ามแต่งขึ้นเอง ให้แนะนำติดต่อครูที่ปรึกษา ฝ่ายทะเบียน หรือฝ่ายที่เกี่ยวข้องเพื่อยืนยัน ถ้าข้อมูลอ้างอิงมีเรื่องนั้นอยู่แล้ว ให้ใช้ข้อมูลอ้างอิงเป็นหลัก คำตอบแบบแนะนำทั่วไปไม่ต้องใส่หมายเลขอ้างอิง\n15. เรื่องบุหรี่ บุหรี่ไฟฟ้า สุรา สารเสพติด: ห้ามแนะนำสถานที่หรือวิธีสูบหรือใช้ ให้บอกว่าสถานศึกษาเป็นเขตปลอดบุหรี่ตามกฎหมาย ถ้าข้อมูลอ้างอิงมีข้อห้ามหรือบทลงโทษให้ตอบตามนั้น แล้วชวนอย่างเป็นห่วงให้ลดละเลิก และแนะนำปรึกษาครูที่ปรึกษาหรือสายด่วนเลิกบุหรี่ 1600\n16. ถ้าคำถามไม่เกี่ยวกับวิทยาลัย การเรียน หรือชีวิตนักเรียนนักศึกษาเลย ให้ปฏิเสธสุภาพสั้นๆ ว่าตอบได้เฉพาะเรื่องวิทยาลัยและการเรียน";
+
+// ---------- Storage ----------
+const load = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (e) { return d; } };
+const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } };
+const clone = o => JSON.parse(JSON.stringify(o));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const SID = (() => { let s = load(K.sid, ''); if (!s) { s = uid(); save(K.sid, s); } return s; })();
+const ADMIN_KEY = 'pc_admin_session', TAB_LOGS = 'pc_tab_logs';
+const ss = { get: k => { try { return sessionStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { sessionStorage.setItem(k, v); } catch (e) {} }, del: k => { try { sessionStorage.removeItem(k); } catch (e) {} } };
+const isAdminSession = () => ss.get(ADMIN_KEY) === '1';
+const tabLogIds = () => { try { return JSON.parse(ss.get(TAB_LOGS) || '[]'); } catch (e) { return []; } };
+let KB = load(K.kb, clone(DEFAULT_KB));
+let DEPTS = load(K.dept, DEFAULT_DEPTS.slice());
+// Move documents from older department names to the current list
+const DEPT_RENAME = { 'ฝ่ายปกครองและกิจกรรมนักศึกษา': 'ฝ่ายปกครอง' };
+if (!DEPTS.length) DEPTS = DEFAULT_DEPTS.slice();
+KB.forEach(d => { d.dept = DEPT_RENAME[d.dept] || (DEPTS.includes(d.dept) ? d.dept : DEPTS[0]); });
+let CFG = Object.assign({ enabled: false, key: '', model: 'claude-haiku-5-5', logUrl: '' }, load(K.cfg, {}));
+let LOGS = load(K.logs, []);
+let curDept = 'all';
+let CLOUD_AI = CLOUD && load(K.ai, false) === true;
+let CLOUD_VER = (CLOUD && load(K.kb, null) !== null) ? load(K.ver, '') : '';
+let CLOUD_SEEDED = CLOUD && load(K.kb, null) !== null;
+const aiReady = () => CLOUD ? CLOUD_AI : !!(CFG.enabled && CFG.key);
+const LOG_URL = () => CLOUD ? CLOUD_URL : CFG.logUrl;
+const CLOUD_ERR = {
+  'bad-password': 'รหัสแอดมินไม่ถูกต้อง ลองออกจากระบบแล้วเข้าใหม่อีกครั้ง',
+  'locked': 'ใส่รหัสผิดหลายครั้ง ระบบล็อกชั่วคราว 10 นาที',
+  'busy': 'เซิร์ฟเวอร์กำลังบันทึกข้อมูลอื่นอยู่ ลองใหม่อีกครั้ง',
+  'bad-request': 'ข้อมูลที่ส่งไม่ถูกต้อง',
+  'server': 'เซิร์ฟเวอร์ขัดข้อง ลองใหม่อีกครั้ง'
+};
+const cloudErr = e => alert(e && e.name === 'AbortError' ? 'เชื่อมต่อเซิร์ฟเวอร์ไม่สำเร็จ (หมดเวลา) ลองใหม่อีกครั้ง' : (CLOUD_ERR[e && e.message] || 'เชื่อมต่อเซิร์ฟเวอร์ไม่สำเร็จ ตรวจสอบอินเทอร์เน็ตแล้วลองใหม่'));
+async function cloud(action, data = {}, ms = 30000) {
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), ms);
+  try {
+    const res = await fetch(CLOUD_URL, { method: 'POST', headers: { 'content-type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action, sid: SID, pwd: ss.get(PWD_KEY) || '', ...data }), signal: ctl.signal });
+    const j = await res.json();
+    if (!j.ok) { const er = new Error(j.error || 'server'); er.detail = j.detail || ''; throw er; }
+    return j;
+  } finally { clearTimeout(timer); }
+}
+function normKB() {
+  const DR = { 'ฝ่ายปกครองและกิจกรรมนักศึกษา': 'ฝ่ายปกครอง' };
+  if (!DEPTS.length) DEPTS = DEFAULT_DEPTS.slice();
+  KB.forEach(d => { d.dept = DR[d.dept] || (DEPTS.includes(d.dept) ? d.dept : DEPTS[0]); });
+}
+async function pullKB(force) {
+  if (!CLOUD) return false;
+  try {
+    const res = await fetch(CLOUD_URL + '?action=kb&v=' + encodeURIComponent(force ? '' : CLOUD_VER), { cache: 'no-store' });
+    const j = await res.json();
+    if (!j.ok) return false;
+    CLOUD_AI = !!j.ai; save(K.ai, CLOUD_AI);
+    if (j.same) return true;
+    CLOUD_SEEDED = !!j.seeded;
+    CLOUD_VER = j.version;
+    if (CLOUD_SEEDED) {
+      KB = j.kb;
+      DEPTS = j.depts.length ? j.depts : DEFAULT_DEPTS.slice();
+      normKB();
+      save(K.kb, KB); save(K.dept, DEPTS); save(K.ver, CLOUD_VER);
+      if (curDept !== 'all' && !DEPTS.includes(curDept)) curDept = 'all';
+    }
+    const keep = ['mDept', 'upDept', 'filterDept'].map(id => [id, $(id).value]);
+    rebuild();
+    renderDepts();
+    keep.forEach(([id, v]) => { if ([...$(id).options].some(o => o.value === v)) $(id).value = v; });
+    if (!$('panel').hidden) { renderKB(); renderDeptAdmin(); renderCfgFields(); }
+    return true;
+  } catch (e) { return false; }
+}
+let IDX = { chunks: [], df: new Map(), avg: 1 };
+
+// ---------- Text processing (Thai-aware) ----------
+const SEG = (typeof Intl !== 'undefined' && Intl.Segmenter) ? new Intl.Segmenter('th', { granularity: 'word' }) : null;
+const STOP = new Set('ยังไง ยัง ไง ที่ และ ของ ใน มี อะไร บ้าง ได้ ไหม ไหน หรือ เป็น ไป ครับ คะ ค่ะ อย่างไร ยังไง เท่าไร เท่าไหร่ เท่า ไหร่ ที่ไหน กี่ หรือไม่ ว่า กับ จะ ให้ ต้อง การ ไม่ ถ้า เมื่อ เรื่อง โดน the a an of is are what how to for in'.split(' '));
+const norm = s => String(s).toLowerCase().normalize('NFC').replace(/[^\p{L}\p{M}\p{N}\s]/gu, ' ').replace(/\s+/g, ' ').trim();
+const bigrams = w => { const o = []; for (let i = 0; i < w.length - 1; i++) o.push(w.slice(i, i + 2)); return o.length ? o : [w]; };
+const TONE = /[\u0E48-\u0E4B]/g;
+// คำหยุดที่ตัดวรรณยุกต์แล้ว รวมถึงคำที่ตัวตัดคำแยกออกมาจากคำหยุดนั้น (เช่น อย่างไร -> อยางไร -> อยาง, ไร)
+const STOP_T = new Set();
+STOP.forEach(w => { const t = w.replace(TONE, ''); STOP_T.add(t); if (SEG) [...SEG.segment(t)].forEach(x => { if (x.isWordLike) STOP_T.add(x.segment); }); });
+const canon = t => (t === 'นักเรียน' ? 'นักศึกษา' : t);
+// ชุด / เครื่องแบบ / การแต่งกาย คือเรื่องเดียวกัน: แปลงเป็นคำเดียวก่อนตัดคำ ทั้งตอนทำดัชนีและตอนค้นหา
+const DRESS_RE = /การแต่งกาย|แต่งกาย|การแต่งการ|แต่งการ|เครื่องแบบ|ชุด(?=นักเรียน|นักศึกษา|หญิง|ชาย|เป็น|ของ|$)/g;
+function tokenize(text) {
+  // ไม่สนใจวรรณยุกต์ตอนค้นหา เพื่อให้พิมพ์ผิดไม้เอก/โท (เช่น โควต้า = โควตา) ก็ยังเจอ
+  const s = norm(text).replace(DRESS_RE, ' dresscode ').replace(TONE, '');
+  if (!s) return [];
+  const parts = SEG ? [...SEG.segment(s)].filter(x => x.isWordLike).map(x => x.segment)
+    : s.split(' ').flatMap(w => /[\u0E00-\u0E7F]/.test(w) ? bigrams(w) : [w]);
+  return parts.map(canon).filter(t => t && t.trim() && !STOP_T.has(t));
+}
+function splitLong(text, max = 300) {
+  if (text.length <= max) return [text];
+  const out = []; let cur = '';
+  text.split(' ').forEach(w => { if (cur && (cur + ' ' + w).length > max) { out.push(cur.trim()); cur = w; } else cur += ' ' + w; });
+  if (cur.trim()) out.push(cur.trim());
+  return out;
+}
+const LEAD = /^\d+(?:\.\d+)+\.?\s+|^\d+\.\s+/;
+const LEVEL_FIX = s => String(s).replace(/ระดับ\s*ประกาศ\S*\s*\(\s*(ปวช|ปวส)\s*\.?\s*\)/g, '$1.');
+const cleanNum = s => LEVEL_FIX(String(s)).replace(/ตามข้อ(?:ที่)?\s*\d+\s*(?:แห่ง)?/g, 'ตาม').replace(/ข้อ(?:ที่)?\s*\d+\s*/g, '').replace(/[ \t]{2,}/g, ' ').trim();
+const cleanOut = s => LEVEL_FIX(String(s)).replace(/ตามข้อ(?:ที่)?\s*\d+\s*(?:แห่ง)?/g, 'ตาม').replace(/ข้อ(?:ที่)?\s*\d+\s*/g, '')
+  .replace(/^([ \t]*(?:[-•][ \t]*)?)\d+(?:\.\d+)+\.?[ \t]+/gm, '$1').replace(/^([ \t]*(?:[-•][ \t]*)?)\d+\.[ \t]+/gm, '$1').replace(/[ \t]{2,}/g, ' ');
+// ระบุ ปวช. หรือ ปวส. ตรงๆ = ตอบเฉพาะระดับนั้น / ไม่ระบุ (ถามว่านักเรียนหรือนักศึกษาก็ตาม) = ตอบทั้งสองระดับ แยกหัวเรื่อง
+const askLevel = q => {
+  const n = norm(q), a = /ปวช/.test(n), b = /ปวส/.test(n);
+  return a !== b ? (a ? 'ปวช.' : 'ปวส.') : '';
+};
+const genderOf = t => /หญิง/.test(t) ? 'หญิง' : /ชาย/.test(t) ? 'ชาย' : '';
+const levelOf = t => /ปวส/.test(t) ? 'ปวส.' : /ปวช/.test(t) ? 'ปวช.' : '';
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+// ทำลิงก์ในคำตอบให้กดได้: https://... และชื่อเว็บที่ไม่มี https:// (เช่น admission.vec.go.th)
+const LINK_RE = /(https?:\/\/[A-Za-z0-9\-._~:\/?#@!$&;=+,%*()\[\]']+)|(?<![A-Za-z0-9@.\-])((?:[A-Za-z0-9\-]+\.)+(?:go\.th|ac\.th|co\.th|or\.th|in\.th|th|com|net|org|edu|me|io)(?![A-Za-z0-9])(?:\/[A-Za-z0-9\-._~:\/?#@!$&;=+,%*()\[\]']*)?)/gi;
+const linkify = h => h.replace(LINK_RE, (m, a, b) => {
+  const raw = a || b, tail = (raw.match(/[.,;:!)\]']+$/) || [''])[0], url = tail ? raw.slice(0, -tail.length) : raw;
+  const href = a ? url : 'https://' + url;
+  return `<a href="${href}" target="_blank" rel="noopener noreferrer">${url}</a>${tail}`;
+});
+const fmt = s => linkify(esc(s).replace(/^- /gm, '• ').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')).replace(/\n/g, '<br>');
+
+// ---------- Index: split every document into rules, then score by question ----------
+function rebuild() {
+  const chunks = [];
+  KB.forEach(doc => {
+    const title = cleanNum(doc.title || '');
+    const kws = (doc.keywords || []).map(norm).filter(k => k.length > 1);
+    const gender = genderOf(title), level = levelOf(title);
+    let section = '', dressMode = false;
+    // ข้อที่เรียงเลขมาในบรรทัดเดียวกัน ("... 2. กางเกง: ... 3. เข็มขัด: ...") ให้แยกเป็นบรรทัดละข้อ
+    // จัดรูปแบบที่พิมพ์ไม่เว้นวรรค: "เครื่องแบบ... ระดับ ปวส. :1.เสื้อ: ..." -> หัวข้ออยู่บรรทัดของตัวเอง และ "2.กางเกง:" -> "2. กางเกง:"
+    const content = String(doc.content || '')
+      .replace(/^([^\n:：]{3,90}ระดับ\s*(?:ปวช|ปวส)\.?\s*[:：])[ \t]*(?=\d{1,2}\s*\.)/gm, '$1\n')
+      .replace(/(^|\n|\s)(\d{1,2}\.)(?=[ก-๙A-Za-z])/g, '$1$2 ');
+    content.replace(/\s+(\d{1,2}\.\s+)(?=\S)/g, '\n$1').split(/\n+/).forEach(raw => {
+      const line = raw.replace(/^\s*(?:[-•*]|\d+[.)])\s+/, '').trim();
+      if (!line) return;
+      if (/[:：]$/.test(line)) { section = line.replace(/[:：]$/, '').trim(); dressMode = false; return; }
+      const m = line.match(/^([^:：]{1,60})[:：]\s*(.+)$/);
+      if (m && m[2].length > 40 && /ระดับ\s*ปว[ชส]|ปว[ชส]|(?:นักเรียน|นักศึกษา)\s*(?:ชาย|หญิง)/.test(m[1])) {
+        // บรรทัดแบบ "การแต่งกายนักศึกษาหญิงระดับปวส.: ข้อ1 ข้อ2: ... ข้อ3. ข้อ4" -> ป้ายหน้า : เป็นหัวข้อย่อย แล้วแยกแต่ละข้อเป็นรายการ
+        const sub = cleanNum(m[1].trim());
+        const ABBR = /^(?:ปวช|ปวส|นครปฐม)$/;
+        m[2].replace(/\s+(?=[ก-๙]{2,25}[:：]\s)/g, '\n')
+          .replace(/([ก-๙]{3,})\.\s+(?=[ก-๙])/g, (all, w) => ABBR.test(w) ? all : w + '\n')
+          .split(/\n+/).map(t => t.trim()).filter(Boolean).forEach(item => {
+            const mm = item.match(/^([^:：]{1,40})[:：]\s*(.+)$/);
+            const lb = cleanNum(mm ? mm[1].trim() : ''), bd = cleanNum(mm ? mm[2].trim() : item);
+            splitLong(bd).filter(p => p.trim()).forEach(part => chunks.push({
+              docKey: doc.id, doc: title, dept: doc.dept || '', section: sub, label: lb, body: part, kws, num: '',
+              gender: gender || genderOf(sub), level: level || levelOf(sub), imgs: doc.images || [],
+              text: norm(lb + ' ' + part + ' ' + sub),
+              tokL: tokenize(lb), tok: tokenize(part),
+              ctx: new Set(tokenize(title + ' ' + sub))
+            }));
+          });
+        return;
+      }
+      const label = cleanNum(m ? m[1].trim() : '');
+      const body = cleanNum(m ? m[2].trim() : line.replace(LEAD, ''));
+      const num = (line.match(/^\d+(?:\.\d+)*/) || [''])[0];
+      // ข้อที่เรียงเลขอยู่ท้ายหัวข้อ "เครื่องแบบ..." แต่ไม่มีป้ายหน้า (เช่น "5. เก็บชายเสื้อในกระโปรง ... ห้ามสักหรือเจาะ") คือเนื้อหาการแต่งกาย
+      // แยกเป็นหัวข้อ "การแต่งกาย..." ของระดับ/เพศเดียวกัน เพื่อไม่ให้ปนกับเครื่องแบบ
+      let secName = cleanNum(section);
+      // รายการที่มีป้าย "การแต่งกาย:" อยู่ในหัวข้อ "เครื่องแบบ..." (เช่น "8. การแต่งกาย: เก็บชายเสื้อ...") และบรรทัดต่อจากนั้น = เนื้อหาการแต่งกาย แยกเป็นหัวข้อ "การแต่งกาย..."
+      if (!dressMode && m && cleanNum(m[1].trim()) === 'การแต่งกาย' && /เครื่องแบบ/.test(secName)) dressMode = true;
+      if (dressMode && /เครื่องแบบ/.test(secName)) secName = secName.replace(/เครื่องแบบ/, 'การแต่งกาย');
+      if (!m && /^\s*\d{1,2}[.)]\s/.test(raw) && body.length > 40 && /เครื่องแบบ/.test(secName)) secName = secName.replace(/เครื่องแบบ/, 'การแต่งกาย');
+      if (secName !== cleanNum(section)) {
+        // แยกเนื้อหาการแต่งกายเป็นบรรทัดละเรื่อง: ตามป้าย "เสื้อซับใน:" ตามประโยค และตามคำว่า "ห้าม"
+        const ABBR2 = /^(?:ปวช|ปวส|นครปฐม)$/;
+        body.replace(/\s+(?=[ก-๙]{2,25}[:：]\s)/g, '\n').replace(/([ก-๙]{3,})\.\s+(?=[ก-๙])/g, (all, w) => ABBR2.test(w) ? all : w + '\n').replace(/\s+(?=ห้าม)/g, '\n')
+          .split(/\n+/).map(t => t.trim()).filter(Boolean).forEach(item => {
+            const mm = item.match(/^([^:：]{1,40})[:：]\s*(.+)$/);
+            const lb = cleanNum(mm ? mm[1].trim() : ''), bd = cleanNum(mm ? mm[2].trim() : item);
+            chunks.push({
+              docKey: doc.id, doc: title, dept: doc.dept || '', section: secName, label: lb, body: bd, kws, num, gender: gender || genderOf(secName), level: level || levelOf(secName), imgs: doc.images || [],
+              text: norm(lb + ' ' + bd + ' ' + secName), tokL: tokenize(lb), tok: tokenize(bd), ctx: new Set(tokenize(title + ' ' + secName))
+            });
+          });
+        return;
+      }
+      splitLong(body).filter(p => p.trim()).forEach(part => chunks.push({
+        docKey: doc.id, doc: title, dept: doc.dept || '', section: secName, label, body: part, kws, num, gender: gender || genderOf(section) || genderOf(label), level: level || levelOf(section) || levelOf(label), imgs: doc.images || [],
+        text: norm(label + ' ' + part + ' ' + secName),
+        tokL: tokenize(label), tok: tokenize(part),
+        ctx: new Set(tokenize(title + ' ' + secName))
+      }));
+    });
+  });
+  chunks.forEach((c, i) => c.i = i);
+  const df = new Map();
+  chunks.forEach(c => new Set([...c.tokL, ...c.tok]).forEach(t => df.set(t, (df.get(t) || 0) + 1)));
+  const total = chunks.reduce((s, c) => s + c.tokL.length + c.tok.length, 0);
+  IDX = { chunks, df, avg: total / Math.max(chunks.length, 1) || 1 };
+}
+
+function expand(top, lim = 12) {
+  const out = [...top], seen = new Set(top.map(h => h.c));
+  top.forEach(h => {
+    const n = h.c.num;
+    if (!n) return;
+    const parent = n.includes('.') ? n.slice(0, n.lastIndexOf('.')) : '';
+    IDX.chunks.forEach(k => {
+      if (k.docKey !== h.c.docKey || !k.num || seen.has(k) || out.length >= lim) return;
+      if (k.num === parent || k.num.startsWith(n + '.')) { seen.add(k); out.push({ c: k, cover: h.cover, score: h.score }); }
+    });
+  });
+  return out;
+}
+
+// BM25 + weighted question coverage; returns the rules that cover the question best
+// ถ้าในคำถามระบุชื่อฝ่าย (เช่น "ฝ่ายการเงิน") ให้ค้นเฉพาะฝ่ายนั้น ไม่ดึงข้อมูลฝ่ายอื่นมาปน
+function deptInQuestion(q) {
+  const n = norm(q);
+  const hit = DEPTS.filter(d => { const a = norm(d), b = a.replace(/^(ฝ่าย|งาน)/, ''); return n.includes(a) || (b.length >= 3 && (n.includes('ฝ่าย' + b) || n.includes('งาน' + b))); });
+  return hit.length === 1 ? hit[0] : '';
+}
+// เมื่อผลมาจากหลายฝ่าย เก็บเฉพาะฝ่ายที่คะแนนสูงสุด (และฝ่ายที่คะแนนใกล้เคียงกันจริงๆ)
+function focusDept(hits) {
+  const best = new Map();
+  hits.forEach(h => best.set(h.c.dept, Math.max(best.get(h.c.dept) || 0, h.score || 0)));
+  if (best.size < 2) return hits;
+  const top = Math.max(...best.values());
+  const keep = new Set([...best].filter(([, v]) => v >= top * 0.7).map(([d]) => d));
+  return hits.filter(h => keep.has(h.c.dept));
+}
+// ค้นหาเป็นลำดับขั้น: 1) ฝ่าย 2) หัวข้อหลัก 3) หัวข้อย่อย 4) รายละเอียด
+// แต่ละขั้นเก็บเฉพาะกลุ่มที่คะแนนสูงสุด (และกลุ่มที่ใกล้เคียงกันจริงๆ) แล้วจึงลงไปขั้นถัดไป
+// ถ้าคำถามระบุคำหัวเรื่อง (เครื่องแบบ / การแต่งกาย / ทรงผม) ให้เหลือเฉพาะหัวข้อที่มีคำนั้นอยู่จริง เช่น ถามเครื่องแบบ ไม่เอาหัวข้อ "การแต่งกาย..."
+// เครื่องแบบ/ชุด = เฉพาะหัวข้อเครื่องแบบ ส่วน การแต่งกาย เป็นหัวข้อกว้างกว่า รวมทั้งเครื่องแบบและการแต่งกาย
+const TOPICS = [[['เครื่องแบบ'], /เครื่องแบบ|ชุดนักเรียน|ชุดนักศึกษา/], [['การแต่งกาย', 'เครื่องแบบ'], /การแต่งกาย|แต่งการ/], [['ทรงผม'], /ทรงผม/]];
+function topicFilter(arr, q, textOf) {
+  for (const [names, re] of TOPICS) {
+    if (!re.test(q)) continue;
+    // ทำทีละกลุ่มระดับ/เพศ: ใช้หัวข้อที่ตรงคำถามที่สุดก่อน ถ้ากลุ่มนั้นไม่มี จึงใช้คำใกล้เคียงถัดไป (เช่น ปวช. ไม่มีหัวข้อ "การแต่งกาย" ใช้ "เครื่องแบบ" แทน)
+    const bucket = x => (x.c.level || '') + '|' + (x.c.gender || '');
+    return [...new Set(arr.map(bucket))].flatMap(b => {
+      const part = arr.filter(x => bucket(x) === b);
+      for (const n of names) { const hit = part.filter(x => textOf(x).includes(n)); if (hit.length) return hit; }
+      return part;
+    });
+  }
+  return arr;
+}
+function routeHits(cands, qt, ratio, query = '') {
+  const keepOne = (arr, key, r) => {
+    const m = new Map();
+    arr.forEach(x => { const k = key(x); m.set(k, Math.max(m.get(k) || 0, x.score)); });
+    const top = Math.max(...m.values());
+    return arr.filter(x => m.get(key(x)) >= top * r);
+  };
+  const keep = (arr, key, r, perPerson) => {
+    if (!perPerson) return keepOne(arr, key, r);
+    const bucket = x => (x.c.level || '') + '|' + (x.c.gender || '');
+    return [...new Set(arr.map(bucket))].flatMap(b => keepOne(arr.filter(x => bucket(x) === b), key, r));
+  };
+  let r = keep(cands, x => x.c.dept, ratio[0]);                                   // 1) ฝ่าย
+  r = topicFilter(r, query, x => x.c.doc.replace(/ระเบียบการแต่งกาย/g, ''));   // ตัดคำนำ "ระเบียบการแต่งกาย" ที่อยู่ในชื่อทุกแถวออก ไม่งั้นทุกแถวถือว่าเป็นหัวข้อการแต่งกายเหมือนกันหมด
+  r = keep(r, x => x.c.docKey, ratio[1], true);                                   // 2) หัวข้อหลัก (แยกตามระดับ/เพศ)
+  // ตอบจากข้อมูล 1 แถว (1 เอกสารในชีต) ต่อกลุ่มระดับ/เพศ: เลือกแถวที่คะแนนสูงสุด ไม่ดึงแถวอื่นมาปน
+  { const bk = x => (x.c.level || '') + '|' + (x.c.gender || ''), best = new Map();
+    r.forEach(x => { const k = bk(x), cur = best.get(k); if (!cur || x.score > cur.score) best.set(k, { key: x.c.docKey, score: x.score }); });
+    r = r.filter(x => best.get(bk(x)).key === x.c.docKey); }
+  r = topicFilter(r, query, x => x.c.section || '');
+  r = keep(r, x => x.c.docKey + '|' + (x.c.section || ''), ratio[2], true);       // 3) หัวข้อย่อย (แยกตามระดับ/เพศ)
+  // 4) รายละเอียด: ถ้าหัวข้อย่อยเป็นรายการที่มีป้าย (เสื้อ / กางเกง / เข็มขัด ...) และคำถามระบุรายการใด ให้ตอบเฉพาะรายการนั้น
+  // ทำทีละกลุ่มระดับ/เพศ (ไม่งั้นป้ายของกลุ่มหนึ่งไปตัดข้อมูลของอีกกลุ่มทิ้งหมด)
+  const askDressQ = /การแต่งกาย|แต่งการ/.test(query) && !/เครื่องแบบ|ชุดนักเรียน|ชุดนักศึกษา/.test(query);
+  const bkt = x => (x.c.level || '') + '|' + (x.c.gender || '');
+  r = [...new Set(r.map(bkt))].flatMap(b => {
+    let g = r.filter(x => bkt(x) === b);
+    if (g.length >= 3 && g.filter(x => x.c.label).length >= g.length * 0.8) {
+      const asked = g.filter(x => x.c.tokL.some(t => qt.includes(t) && (t !== 'dresscode' || askDressQ)));
+      if (asked.length && asked.length < g.length) g = asked;
+    }
+    return g;
+  });
+  // ถามเจาะจงเพศ: ถ้ามีข้อมูลที่ระบุเพศนั้นแล้ว ไม่เอาข้อมูลที่ไม่ระบุเพศ/ระดับ (เช่น ชุดพละ ชุดวิชาทหาร) มาปน
+  if ((qt.includes('ชาย') !== qt.includes('หญิง')) && r.some(x => x.c.gender)) r = r.filter(x => x.c.gender || x.c.level);
+  return r;
+}
+function search(query, cap = 6, dept = 'all', loose = false) {
+  if (dept === 'all') { const d = deptInQuestion(query); if (d) { const r = search(query, cap, d, loose); if (r.hits.length) return r; } }
+  query = query.replace(/หัก/g, 'ตัด');
+  const qn = norm(query), qt = [...new Set(tokenize(query))];
+  if (!qt.length || !IDX.chunks.length) return { terms: qt, hits: [], more: [] };
+  const N = IDX.chunks.length, K1 = 1.4, B = 0.75;
+  const W = new Map(qt.map(t => { const d = IDX.df.get(t) || 0; return [t, Math.log(1 + (N - d + 0.5) / (d + 0.5))]; }));
+  const wTotal = qt.reduce((s, t) => s + W.get(t), 0);
+  const pool = dept === 'all' ? IDX.chunks : IDX.chunks.filter(c => c.dept === dept);
+  const scored = [];
+  pool.forEach(c => {
+    const tf = new Map(), len = c.tokL.length + c.tok.length;
+    [...c.tokL, ...c.tok].forEach(t => tf.set(t, (tf.get(t) || 0) + 1));
+    let s = 0, cover = 0;
+    qt.forEach(t => {
+      const f = tf.get(t) || 0, inCtx = c.ctx.has(t);
+      if (!f && !inCtx) return;
+      cover += W.get(t);
+      if (f) { const d = IDX.df.get(t) || 0, idf = Math.log(1 + (N - d + 0.5) / (d + 0.5)); s += idf * f * (K1 + 1) / (f + K1 * (1 - B + B * len / IDX.avg)); }
+      if (c.tokL.includes(t)) s += 1.5;
+      if (inCtx) s += 0.5;
+    });
+    if (!cover) return;
+    let kw = 0;
+    c.kws.forEach(k => { if (qn.includes(k)) { kw += 2; if (c.text.includes(k)) kw += 3; } });
+    if (c.dept && qn.includes(norm(c.dept))) kw += 2;
+    const ratio = cover / wTotal;
+    scored.push({ c, cover: ratio, score: s + 4 * ratio + kw });
+  });
+  if (!scored.length) return { terms: qt, hits: [], more: [] };
+  scored.sort((a, b) => b.score - a.score);
+  const maxCover = Math.max(...scored.map(x => x.cover));
+  if (maxCover < 0.6) return { terms: qt, hits: [], more: [] };
+  const gq = qt.includes('ชาย') !== qt.includes('หญิง') ? (qt.includes('ชาย') ? 'ชาย' : 'หญิง') : '';
+  if (loose) {
+    // ส่งให้ AI: ไม่ตัดแถวที่คะแนนต่ำกว่าเกณฑ์ เพื่อให้คำถามกว้างๆ ได้ข้อมูลครบ แล้วให้ AI เป็นคนคัดเอง
+    const lq = askLevel(query);
+    const pick = scored.filter(x => (!gq || !x.c.gender || x.c.gender === gq) && (!lq || !x.c.level || x.c.level === lq)).slice(0, cap);
+    return { terms: qt, hits: focusDept(expand(routeHits(pick, qt, [0.7, 0.4, 0.4], query), cap + 8)), more: [] };
+  }
+  const lqn = askLevel(query);
+  const all = scored.filter(x => x.cover >= maxCover - 0.15 && x.score >= scored[0].score * 0.3 && (!gq || !x.c.gender || x.c.gender === gq) && (!lqn || !x.c.level || x.c.level === lqn));
+  const routed = routeHits(all, qt, [0.85, 0.6, 0.6], query);
+  const top = routed.slice(0, 16);
+  const more = [...new Set(all.map(x => x.c.doc))].filter(d => !routed.some(h => h.c.doc === d));
+  return { terms: qt, hits: focusDept(expand(top, 24).filter(h => !lqn || !h.c.level || h.c.level === lqn)), more };
+}
+
+// Images attached to the rules that were used (max 3; data:image or https links)
+// ลิงก์ Google Drive แบบแชร์ (drive.google.com/file/d/ID/view หรือ open?id=ID) แปลงเป็นลิงก์ที่แสดงเป็นรูปได้
+const imgUrl = u => { const m = /drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=\w+&)?id=)([\w-]{15,})/.exec(u); return m ? 'https://lh3.googleusercontent.com/d/' + m[1] : u; };
+const pickImages = list => {
+  const seen = new Set(), out = [];
+  list.forEach(h => {
+    if (seen.has(h.c.docKey)) return;
+    seen.add(h.c.docKey);
+    (h.c.imgs || []).map(imgUrl).forEach(s => { if (out.length < 3 && /^(?:data:image\/|https:\/\/)/.test(s)) out.push(s); });
+  });
+  return out;
+};
+// Local answer: group by gender, then by level (ปวช./ปวส.), then by department when several departments match
+function answer(q, dept = curDept) {
+  if (/^\s*(สวัสดี|หวัดดี|hello|hi)/i.test(q)) {
+    return { text: 'สวัสดีค่ะ 🌸 ' + NAME + 'ช่วยตอบเรื่องระเบียบ กิจกรรม และข้อมูลของทุกฝ่ายได้ ลองพิมพ์คำถามได้เลยค่ะ', terms: [], docs: [], more: [], found: true };
+  }
+  const { terms, hits, more } = search(q, 6, dept);
+  if (!hits.length) return { text: NOT_FOUND, terms, docs: [], more: [], found: false };
+  const ordered = [...hits].sort((a, b) => a.c.i - b.c.i).filter(h => /[^\d.\s]/.test(h.c.body));
+  const line = c => '• ' + (c.label ? `${c.label}: ${c.body}` : c.body);
+  const topic = (q.replace(/แต่งการ/g, 'แต่งกาย').match(/ทรงผม|การแต่งกาย|เครื่องแบบ|เครื่องประดับ|รองเท้า|ถุงเท้า|เข็มขัด|กระเป๋า|กางเกง|กระโปรง|เสื้อ/) || [''])[0];
+  const askedLv = askLevel(q);
+  const who = lv => lv === 'ปวช.' ? 'นักเรียน' : lv === 'ปวส.' ? 'นักศึกษา' : 'นักเรียน/นักศึกษา';
+  // หัวข้อย่อยจากข้อมูล เช่น "เครื่องแบบนักเรียนชาย ระดับ ปวช." -> "เครื่องแบบนักเรียนชาย (ปวช.)"
+  const prettySection = t => cleanNum(t).replace(/[:：]\s*$/, '').replace(/\s*ระดับ\s*(ปวช|ปวส)\.?/g, ' ($1.)').replace(/\s+/g, ' ').trim();
+  // ถามว่า "การแต่งกาย" แต่ระดับนั้นมีแค่หัวข้อ "เครื่องแบบ..." -> แสดงหัวเรื่องตามที่ถาม เช่น "การแต่งกายนักเรียนหญิง (ปวช.)"
+  const askDress = /การแต่งกาย|แต่งการ/.test(q) && !/เครื่องแบบ|ชุดนักเรียน|ชุดนักศึกษา/.test(q);
+  const showSection = t => { const r = prettySection(t); return askDress ? r.replace(/^เครื่องแบบ/, 'การแต่งกาย') : r; };
+  const render = all => {
+    const blocks = [];
+    const bySec = new Map();
+    all.filter(h => h.c.section).forEach(h => { const k = h.c.docKey + '|' + h.c.section; if (!bySec.has(k)) bySec.set(k, []); bySec.get(k).push(h); });
+    bySec.forEach(items => blocks.push([`**${showSection(items[0].c.section)}**`, ...items.map(h => line(h.c))].join('\n')));
+    const list = all.filter(h => !h.c.section);
+    ['ชาย', 'หญิง', ''].forEach(g => {
+      const part = list.filter(h => h.c.gender === g);
+      if (!part.length) return;
+      const out = [];
+      ['ปวช.', 'ปวส.', ''].forEach(lv => {
+        const items = part.filter(h => h.c.level === lv);
+        if (!items.length) return;
+        if (g || lv) out.push(`**${topic ? topic + 'ของ' : (/ชุด(?=นักเรียน|นักศึกษา)/.test(q) ? 'ชุด' : '')}${who(lv || askedLv)}${g}${lv ? ' (' + lv + ')' : ''}**`);
+        items.forEach(h => out.push(line(h.c)));
+      });
+      blocks.push(out.join('\n'));
+    });
+    return blocks.join('\n\n');
+  };
+  const depts = [...new Set(ordered.map(h => h.c.dept))];
+  const text = depts.length > 1 ? depts.map(d => `**${d}**\n` + render(ordered.filter(h => h.c.dept === d))).join('\n\n') : render(ordered);
+  return { text, terms, docs: [...new Set(ordered.map(h => h.c.doc))], more, found: true, images: pickImages(ordered) };
+}
+
+// ---------- AI (grounded synthesis, optional) ----------
+// แก้ตัวอักษรไทยที่โมเดลบางตัวสร้างแยกชิ้น ทำให้สระ/วรรณยุกต์แสดงเพี้ยน (เช่น นํา -> นำ, น้ํา -> น้ำ) และลบอักขระล่องหน
+function fixThai(t) {
+  return String(t)
+    .replace(/[\u200B-\u200D\u2060\uFEFF\u00AD]/g, '')
+    .replace(/\u0E4D([\u0E48-\u0E4B]?)\u0E32/g, '$1\u0E33')
+    .replace(/([\u0E48-\u0E4B])\u0E4D\u0E32/g, '$1\u0E33')
+    .replace(/([\u0E31\u0E34-\u0E3A\u0E47-\u0E4E])\1+/g, '$1')
+    .normalize('NFC');
+}
+async function callClaude(question, context) {
+  if (CLOUD) { const j = await cloud('ask', { question, context }, 70000); return (j.text || '').trim(); }
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-api-key': CFG.key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+    body: JSON.stringify({ model: CFG.model, max_tokens: 2000, system: SYSTEM_PROMPT, messages: [{ role: 'user', content: `ข้อมูลอ้างอิง:\n${context}\n\nคำถาม: ${question}` }] })
+  });
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  const data = await res.json();
+  return data.content.filter(b => b.type === 'text').map(b => b.text).join('').trim();
+}
+// ค้นแบบเทียบตัวอักษรคู่ (bigram) เมื่อพิมพ์ผิดหรือย่อคำ เช่น "กู้ยส." -> กองทุนเงินให้กู้ยืม (กยศ.) ใช้เฉพาะตอนค้นปกติไม่เจออะไรเลย แล้วให้ AI เดาเจตนาเอง
+function fuzzyChunks(q, dept) {
+  const strip = x => norm(x).replace(TONE, '').replace(/[^\u0E00-\u0E7Fa-z0-9]/g, '');
+  const bg = x => { const t = strip(x), r = new Set(); for (let i = 0; i < t.length - 1; i++) r.add(t.slice(i, i + 2)); return r; };
+  const qb = bg(q.replace(/เป็นยังไง|เป็นอย่างไร|อย่างไร|ยังไง|คืออะไร|ได้ไหม|หรือไม่|ไหม|อะไร|ครับ|ค่ะ|คะ|นะ|หน่อย/g, ''));
+  if (qb.size < 2) return [];
+  const byDoc = new Map();
+  IDX.chunks.forEach(c => { if (dept === 'all' || c.dept === dept) { const a = byDoc.get(c.docKey) || { t: new Set(), cs: [] }; [c.doc, c.section, c.label, ...c.kws].forEach(x => bg(x).forEach(b => a.t.add(b))); a.cs.push(c); byDoc.set(c.docKey, a); } });
+  const sc = [...byDoc.entries()].map(([k, v]) => { let n = 0; qb.forEach(b => { if (v.t.has(b)) n++; }); return { k, n, r: n / qb.size, cs: v.cs }; })
+    .filter(x => x.n >= 2 && x.r >= 0.5).sort((x, y) => y.r - x.r || y.n - x.n);
+  if (!sc.length) return [];
+  let used = 0;
+  return sc.filter(x => x.r >= sc[0].r * 0.9).flatMap(x => x.cs).filter(c => (used += c.body.length) < 14000);
+}
+const NOCTX = '(ไม่มีข้อมูลในระเบียบที่ตรงกับคำถามนี้ ให้ตอบตามข้อ 9 14 15 16)';
+async function adviceAnswer(q) {
+  const raw = await callClaude(q, NOCTX);
+  if (!raw) throw new Error('empty');
+  return { text: fixThai(raw.replace(/\s*\[\d+(?:\s*,\s*\d+)*\]/g, '')).trim(), terms: [], docs: [], more: [], mode: 'ai', found: false };
+}
+async function smartAnswer(q, dept) {
+  const { terms, hits } = search(q, 24, dept, true);
+  if (!aiReady()) return { ...answer(q, dept), mode: 'local' };
+  if (!hits.length) {
+    const fz = fuzzyChunks(q, dept);
+    if (!fz.length) return adviceAnswer(q);
+    const ord = fz.map(c => ({ c }));
+    const ctx = ord.map((h, i) => `[${i + 1}] (${h.c.dept ? h.c.dept + ' › ' : ''}${h.c.doc}${h.c.section ? ' › ' + h.c.section : ''}${h.c.label ? ' › ' + h.c.label : ''}) ${h.c.body}`).join('\n');
+    const rawF = await callClaude(q + ' (คำถามอาจพิมพ์ผิดหรือย่อคำ ให้เดาเจตนาจากข้อมูลอ้างอิงที่ให้มา ถ้าข้อมูลอ้างอิงไม่เกี่ยวข้องกับคำถามจริงๆ ห้ามนำมาตอบ ให้ทำตามข้อ 9 14 15 16 ของคำแนะนำ)', ctx);
+    if (!rawF) throw new Error('empty');
+    const citedF = [...new Set([...rawF.matchAll(/\[(\d+)\]/g)].map(m => +m[1]))].filter(n => n >= 1 && n <= ord.length);
+    const pickF = citedF.length ? citedF.map(n => ord[n - 1]) : [];
+    return { text: fixThai(rawF.replace(/\s*\[\d+(?:\s*,\s*\d+)*\]/g, '')).trim(), terms: [], docs: [...new Set(pickF.map(h => h.c.doc))], more: [], mode: 'ai', found: true, images: pickImages(pickF) };
+  }
+  // ตอบจากข้อมูล 1 แถวในชีตที่ตรงที่สุด (ต่อกลุ่มระดับ/เพศ) และส่งให้ AI ทั้งแถว เพื่อให้ตอบครบทุกข้อและไม่ปนกับแถวอื่น
+  // ชื่อหัวข้อ (คอลัมน์ "หัวข้อ") ที่มีคำของคำถามตั้งแต่ 2 คำขึ้นไป เช่น "นำรถเข้ามาจอด..." สำหรับคำถามเรื่องนำรถมาจอด ได้สิทธิ์ก่อน
+  const GEN = new Set(['ระเบียบ', 'การ', 'วิทยาลัย', 'นักศึกษา', 'ข้อมูล', 'ฝ่าย', 'เรื่อง', 'ภายใน', 'ใน']);
+  const qterms = terms.filter(t => !GEN.has(t));
+  const tm = new Map(), top = new Map();
+  hits.forEach(h => {
+    if (!tm.has(h.c.docKey)) { const tt = new Set(tokenize(h.c.doc).map(x => x)); const n = qterms.filter(t => tt.has(t)).length; tm.set(h.c.docKey, n >= 2 ? n : 0); }
+    top.set(h.c.docKey, Math.max(top.get(h.c.docKey) || 0, h.score));
+  });
+  const best = new Map();
+  [...hits].sort((x, y) => (tm.get(y.c.docKey) - tm.get(x.c.docKey)) || (top.get(y.c.docKey) - top.get(x.c.docKey)) || (y.score - x.score))
+    .forEach(h => { const k = (h.c.level || '') + '|' + (h.c.gender || ''); if (!best.has(k)) best.set(k, h.c.docKey); });
+  // ถ้าชื่อหัวข้อของแถวใดตรงกับคำถามตั้งแต่ 2 คำ (รวมยาวพอ) ใช้แถวนั้นแถวเดียวทั้งแถว แม้ตัวค้นหาจะให้คะแนนแถวอื่นสูงกว่า
+  const ntl = x => norm(x).replace(TONE, '');
+  const tdocs = KB.map(d => { const t = ntl(d.title), m = qterms.filter(x => t.includes(x)); return { d, n: m.length, len: m.join('').length }; })
+    .filter(x => x.n >= 2 && x.len >= 6).sort((x, y) => (y.n - x.n) || (y.len - x.len));
+  const keys = tdocs.length ? new Set([tdocs[0].d.id]) : new Set(best.values()), qg = genderOf(q), ql = askLevel(q);
+  let used = 0;
+  const ordered = IDX.chunks.filter(c => keys.has(c.docKey) && !(qg && c.gender && c.gender !== qg) && !(ql && c.level && c.level !== ql))
+    .sort((x, y) => x.i - y.i).filter(c => (used += c.body.length) < 14000).map(c => ({ c }));
+  if (!ordered.length) return adviceAnswer(q);
+  // ถามการแต่งกาย → เหลือเฉพาะหัวข้อการแต่งกาย / ถามเครื่องแบบ → เหลือเฉพาะรายการเครื่องแบบ (แยกตามระดับ/เพศ) เพื่อไม่ให้ AI หยิบของอีกเรื่องมาปน
+  const aDress = /การแต่งกาย|แต่งการ/.test(q), aUni = /เครื่องแบบ|ชุดนักเรียน|ชุดนักศึกษา/.test(q);
+  if (aDress !== aUni) {
+    const want = aDress ? /การแต่งกาย/ : /เครื่องแบบ/, bkc = c => (c.level || '') + '|' + (c.gender || '');
+    const okB = new Set(ordered.filter(h => want.test(h.c.section)).map(h => bkc(h.c)));
+    for (let i = ordered.length - 1; i >= 0; i--) if (okB.has(bkc(ordered[i].c)) && !want.test(ordered[i].c.section)) ordered.splice(i, 1);
+  }
+  const context = ordered.map((h, i) => `[${i + 1}] (${h.c.dept ? h.c.dept + ' › ' : ''}${h.c.doc}${h.c.section ? ' › ' + h.c.section : ''}${h.c.label ? ' › ' + h.c.label : ''}) ${h.c.body}`).join('\n');
+  // แยก ปวช./ปวส. เฉพาะเมื่อข้อมูลที่ตรงกับคำถามระบุระดับไว้จริง (เช่น เครื่องแบบ ทรงผม) เรื่องที่ใช้กับทุกคน (เช่น การตัดคะแนน) ตอบรวมครั้งเดียว
+  const levelled = hits.slice(0, 6).some(h => h.c.level || /ปวช|ปวส/.test(h.c.doc + ' ' + h.c.section + ' ' + h.c.label));
+  const bothHint = askLevel(q) ? '' : levelled ? ' (ตอบแยกทั้งนักเรียน ปวช. และนักศึกษา ปวส. ให้ครบทั้งสองระดับ)' : ' (ข้อมูลนี้ใช้กับทุกคนไม่ได้แยกระดับ ตอบรวมครั้งเดียว ห้ามแยกส่วน ห้ามใส่คำว่า ปวช. หรือ ปวส. ในหัวเรื่องหรือเนื้อหา)';
+  const raw = await callClaude(q + bothHint, context);
+  if (!raw) throw new Error('empty');
+  const cited = [...new Set([...raw.matchAll(/\[(\d+)\]/g)].map(m => +m[1]))].filter(n => n >= 1 && n <= ordered.length);
+  const pick = cited.length ? cited.map(n => ordered[n - 1]) : ordered;
+  return { text: fixThai(raw.replace(/\s*\[\d+(?:\s*,\s*\d+)*\]/g, '')).trim(), terms, docs: [...new Set(pick.map(h => h.c.doc))], more: [], mode: 'ai', found: true, images: pickImages(pick) };
+}
+const INTRO_RE = /(อธิบาย|แนะนำ|เล่า|บอก).{0,6}(ตัวเอง|ตัวหน่อย|แชท|บอท|เว็บ|ระบบ|น้องปาริชาต)|(คุณ|เธอ|น้อง|เป็น|นี่).{0,4}(คือ|เป็น)?.{0,3}(ใคร|อะไร)|ทำอะไรได้|ช่วยอะไรได้|ใช้(งาน)?(ยังไง|อย่างไร)|ชื่ออะไร|แชทนี้|น้องปาริชาตคือ/;
+function introAnswer() {
+  const t = '**สวัสดีค่ะ ' + NAME + ' ผู้ช่วยประจำวิทยาลัยการอาชีพนครปฐมค่ะ** 🌸\n\nพี่คอยตอบคำถามให้นักเรียน นักศึกษา และผู้ปกครอง จากข้อมูลที่แต่ละฝ่ายของวิทยาลัยบันทึกไว้ เช่น\n- ระเบียบการแต่งกาย เครื่องแบบ ทรงผม (แยก ปวช. / ปวส.)\n- ความประพฤติ การตัดคะแนน การนำรถมาจอด\n- กิจกรรม ค่าใช้จ่าย ทุน กยศ. และข้อมูลของฝ่ายต่างๆ\n- คำแนะนำทั่วไปเรื่องเรียน เช่น ดรอปเรียน ลาออก การพัฒนาเกรด\n\nถ้ามีรูปประกอบในข้อมูล พี่จะแนบให้ด้วย พิมพ์ถามได้เลย หรือกดไมค์ 🎤 พูดแล้วเปิดเสียง 🔊 ให้พี่อ่านคำตอบก็ได้ค่ะ ถ้าเรื่องไหนไม่มีในระเบียบ พี่จะบอกตรงๆ ไม่เดาให้ค่ะ';
+  return { text: t, terms: [], docs: [], more: [], mode: 'local', found: true };
+}
+async function respond(q, dept) {
+  if (q.length <= 40 && INTRO_RE.test(q)) return introAnswer();
+  try { return await smartAnswer(q, dept); }
+  catch (err) {
+    const dbg = isAdminSession() || /debug/.test(location.hash);
+    const why = dbg ? ' [' + ((err && err.message) || 'error') + ((err && err.detail) ? ' · ' + err.detail : '') + ']' : '';
+    return { ...answer(q, dept), mode: 'local', note: '⚠️ เชื่อมต่อ AI ไม่สำเร็จ จึงแสดงผลจากการค้นหาในเครื่องแทน' + why };
+  }
+}
+
+// ---------- Usage log ----------
+function logEvent(e) {
+  if (isAdminSession()) return;
+  const rec = { id: uid(), t: new Date().toISOString(), sid: SID, ...e };
+  LOGS.unshift(rec);
+  LOGS.splice(2000);
+  save(K.logs, LOGS);
+  ss.set(TAB_LOGS, JSON.stringify([...tabLogIds(), rec.id].slice(-500)));
+  if (LOG_URL()) { try { fetch(LOG_URL(), { method: 'POST', mode: 'no-cors', headers: { 'content-type': 'text/plain' }, body: JSON.stringify(rec), keepalive: true }).catch(() => {}); } catch (err) {} }
+  if (!$('panel').hidden) renderLogs();
+}
+const countBy = arr => { const m = new Map(); arr.forEach(x => m.set(x, (m.get(x) || 0) + 1)); return [...m].sort((a, b) => b[1] - a[1]).slice(0, 10); };
+const fmtTime = t => new Date(t).toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' });
+function renderLogs() {
+  const visits = LOGS.filter(e => e.type === 'visit'), asks = LOGS.filter(e => e.type === 'ask');
+  const today = new Date().toDateString();
+  const todayVisits = visits.filter(e => new Date(e.t).toDateString() === today).length;
+  const gaps = asks.filter(e => !e.found);
+  $('logKpi').innerHTML = [['การเข้าใช้ทั้งหมด', visits.length], ['เข้าใช้วันนี้', todayVisits], ['ผู้ใช้ (เครื่อง)', new Set(LOGS.map(e => e.sid)).size], ['คำถามทั้งหมด', asks.length], ['ตอบไม่ได้', gaps.length]]
+    .map(([a, b]) => `<div class="k"><b>${b}</b><span>${a}</span></div>`).join('');
+  $('logTable').innerHTML = asks.length ? '<table><tr><th>เวลา</th><th>คำถาม</th><th>ฝ่าย</th><th>ผล</th></tr>' + asks.slice(0, 100).map(e =>
+    `<tr><td>${fmtTime(e.t)}</td><td>${esc(e.q)}</td><td>${esc(e.dept)}</td><td>${e.found ? (e.mode === 'ai' ? '🤖 AI' : 'ค้นหา') : '<span style="color:#b91c1c">ไม่พบ</span>'}</td></tr>`).join('') + '</table>'
+    : '<p class="sub">ยังไม่มีคำถาม</p>';
+  const row = (q, n) => `<div class="item"><span>${esc(q)}</span><b>${n}</b></div>`;
+  $('gapList').innerHTML = countBy(gaps.map(e => e.q)).map(([q, n]) => row(q, n)).join('') || '<p class="sub">ไม่มี</p>';
+  $('topList').innerHTML = countBy(asks.map(e => e.q)).map(([q, n]) => row(q, n)).join('') || '<p class="sub">ไม่มี</p>';
+}
+$('exportBtn').onclick = () => {
+  const rows = [['time', 'type', 'session', 'question', 'department', 'mode', 'found', 'sources']]
+    .concat(LOGS.map(e => [e.t, e.type, e.sid, e.q || '', e.dept || '', e.mode || '', e.found === undefined ? '' : e.found, (e.docs || []).join(' | ')]));
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\ufeff' + csv], { type: 'text/csv' }));
+  a.download = 'parichat-log.csv';
+  a.click();
+};
+$('clearLogBtn').onclick = async () => {
+  if (CLOUD) {
+    if (!confirm('ล้าง Log การใช้งานทั้งหมดในชีต? ข้อมูลจะถูกลบและนับใหม่ (ควรส่งออก CSV ไว้ก่อน)')) return;
+    try { await cloud('clearLogs'); LOGS = []; save(K.logs, LOGS); ss.del(TAB_LOGS); renderLogs(); renderKB(); alert('ล้าง Log แล้ว'); } catch (err) { cloudErr(err); }
+    return;
+  }
+  if (!confirm('รีเซ็ตการเข้าใช้งานทั้งหมดในเครื่องนี้? ข้อมูลจะถูกลบและนับใหม่ตั้งแต่ตอนนี้ (ควรส่งออก CSV เก็บไว้ก่อน)')) return;
+  LOGS = [];
+  save(K.logs, LOGS);
+  ss.del(TAB_LOGS);
+  if (LOG_URL()) { try { fetch(LOG_URL(), { method: 'POST', mode: 'no-cors', headers: { 'content-type': 'text/plain' }, body: JSON.stringify({ type: 'reset', t: new Date().toISOString(), sid: SID }), keepalive: true }).catch(() => {}); } catch (err) {} }
+  renderLogs();
+  renderKB();
+  alert('รีเซ็ตการเข้าใช้งานแล้ว');
+};
+
+// ---------- Chat UI ----------
+function addMsg(role, text, r = {}) {
+  const me = role === 'me';
+  const time = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+  const imgs = !me && r.images && r.images.length ? `<div class="imgs">${r.images.map(s => `<img src="${esc(s)}" alt="รูปประกอบคำตอบ" loading="lazy" referrerpolicy="no-referrer">`).join('')}</div>` : '';
+  const note = !me && r.note ? `<div class="note">${esc(r.note)}</div>` : '';
+  const el = document.createElement('div');
+  el.className = 'row' + (me ? ' me' : '');
+  el.innerHTML = `<div class="av">${me ? 'คุณ' : 'ปาริ'}</div><div style="min-width:0"><div class="bub">${me ? esc(text) : fmt(cleanOut(text))}${imgs}${note}</div><div class="meta">${me ? 'คุณ' : NAME} • ${time}</div></div>`;
+  $('msgs').appendChild(el);
+  $('msgs').scrollTop = $('msgs').scrollHeight;
+}
+async function ask(raw, byVoice) {
+  const q = raw.trim();
+  if (!q) return;
+  addMsg('me', q);
+  $('typing').classList.add('on');
+  const t0 = Date.now();
+  await new Promise(res => setTimeout(res, 400));
+  const r = await respond(q, curDept);
+  $('typing').classList.remove('on');
+  addMsg('bot', r.text, r);
+  if (byVoice || speakOn) speak(r.text);
+  logEvent({ type: 'ask', q, dept: curDept === 'all' ? 'ทุกฝ่าย' : curDept, mode: r.mode || 'local', found: r.found !== false, docs: (r.docs || []).slice(0, 3), ms: Date.now() - t0 });
+}
+function renderDepts() {
+  $('depts').innerHTML = [['all', '🌐 ทุกฝ่าย'], ...DEPTS.map(d => [d, '🏛️ ' + d])]
+    .map(([v, l]) => `<button class="dept ${curDept === v ? 'on' : ''}" data-d="${esc(v)}">${esc(l)}</button>`).join('');
+  $('chatSub').textContent = curDept === 'all' ? 'ค้นหาจากข้อมูลของทุกฝ่าย' : 'กำลังถามเฉพาะ ' + curDept;
+  const opts = DEPTS.map(d => `<option value="${esc(d)}">${esc(d)}</option>`).join('');
+  $('mDept').innerHTML = opts;
+  $('upDept').innerHTML = opts;
+  $('filterDept').innerHTML = '<option value="all">ทุกฝ่าย</option>' + opts;
+}
+$('depts').onclick = e => { const b = e.target.closest('[data-d]'); if (!b) return; curDept = b.dataset.d; renderDepts(); };
+$('quick').innerHTML = QUICK.map(q => `<button class="q" data-q="${esc(q)}">${esc(q)}</button>`).join('');
+$('quick').onclick = e => { const b = e.target.closest('[data-q]'); if (b) ask(b.dataset.q); };
+$('form').onsubmit = e => { e.preventDefault(); const v = $('input').value; $('input').value = ''; ask(v); };
+
+/* ===== เสียง: ไมค์ + อ่านคำตอบ ===== */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+const synth = window.speechSynthesis;
+let speakOn = false, rec = null, listening = false, thVoice = null;
+try { speakOn = localStorage.getItem('pari_speak') === '1'; } catch (e) {}
+function vnote(t) { const n = $('vnote'); n.textContent = t || ''; n.style.display = t ? 'block' : 'none'; }
+function pickVoice() {
+  if (!synth) return;
+  const vs = synth.getVoices();
+  thVoice = vs.find(v => /^th/i.test(v.lang) && /female|premwadee|kanya/i.test(v.name)) || vs.find(v => /^th/i.test(v.lang)) || null;
+}
+if (synth) { pickVoice(); synth.onvoiceschanged = pickVoice; }
+function speechText(t) {
+  return fixThai(String(t || ''))
+    .replace(/https?:\/\/\S+/g, ' ลิงก์ในข้อความ ')
+    .replace(/\[\d+\]/g, '').replace(/\*\*/g, '').replace(/^[\s]*[-•*]\s+/gm, '')
+    .replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}]/gu, '')
+    .replace(/\n+/g, ' ').replace(/\s{2,}/g, ' ').trim().slice(0, 900);
+}
+function stopSpeak() { if (synth) synth.cancel(); }
+function speak(t) {
+  if (!synth) return;
+  stopSpeak();
+  const x = speechText(t); if (!x) return;
+  const u = new SpeechSynthesisUtterance(x);
+  u.lang = 'th-TH'; if (thVoice) u.voice = thVoice; u.rate = 1;
+  synth.speak(u);
+}
+function renderSpk() {
+  const b = $('spkBtn');
+  b.textContent = speakOn ? '🔊' : '🔇'; b.classList.toggle('on', speakOn);
+  b.title = speakOn ? 'ปิดเสียงตอบ' : 'เปิดเสียงตอบ';
+}
+if (!synth) $('spkBtn').style.display = 'none';
+$('spkBtn').onclick = () => {
+  speakOn = !speakOn; try { localStorage.setItem('pari_speak', speakOn ? '1' : '0'); } catch (e) {}
+  if (!speakOn) stopSpeak(); else speak('เปิดเสียงตอบแล้วค่ะ');
+  renderSpk();
+};
+renderSpk();
+if (!SR) {
+  $('micBtn').onclick = () => vnote('เบราว์เซอร์นี้ยังไม่รองรับการพูด แนะนำให้เปิดด้วย Chrome / Edge / Safari (ถ้าเปิดจาก Facebook ให้กด "เปิดในเบราว์เซอร์")');
+} else {
+  $('micBtn').onclick = () => {
+    if (listening) { try { rec.stop(); } catch (e) {} return; }
+    stopSpeak();
+    rec = new SR(); rec.lang = 'th-TH'; rec.interimResults = true; rec.continuous = false;
+    let finalT = '';
+    rec.onstart = () => { listening = true; $('micBtn').classList.add('rec'); vnote('🎤 กำลังฟัง... พูดคำถามได้เลยค่ะ'); };
+    rec.onresult = ev => {
+      let it = '';
+      for (let i = ev.resultIndex; i < ev.results.length; i++) {
+        const tr = ev.results[i][0].transcript;
+        if (ev.results[i].isFinal) finalT += tr; else it += tr;
+      }
+      $('input').value = finalT + it;
+    };
+    rec.onerror = ev => {
+      const m = { 'not-allowed': 'ไมค์ถูกบล็อกอยู่ วิธีเปิด: กดไอคอน 🔒 (หรือ ⚙️) ด้านซ้ายของช่องที่อยู่เว็บ → เลือก ไมโครโฟน → อนุญาต แล้วรีเฟรชหน้านี้ (ถ้าเปิดจากไฟล์ในเครื่อง ให้โฮสต์บนเว็บ HTTPS)', 'service-not-allowed': 'ไมค์ถูกบล็อกอยู่ วิธีเปิด: กดไอคอน 🔒 (หรือ ⚙️) ด้านซ้ายของช่องที่อยู่เว็บ → เลือก ไมโครโฟน → อนุญาต แล้วรีเฟรชหน้านี้ (ถ้าเปิดจากไฟล์ในเครื่อง ให้โฮสต์บนเว็บ HTTPS)', 'no-speech': 'ไม่ได้ยินเสียง ลองกดไมค์แล้วพูดอีกครั้งนะคะ', 'audio-capture': 'ไม่พบไมโครโฟน', 'network': 'เชื่อมต่ออินเทอร์เน็ตไม่ได้ จึงฟังเสียงไม่ได้' };
+      vnote(m[ev.error] || 'ใช้ไมค์ไม่สำเร็จ (' + ev.error + ')');
+    };
+    rec.onend = () => {
+      listening = false; $('micBtn').classList.remove('rec');
+      const v = $('input').value.trim();
+      if (v) { vnote(''); $('input').value = ''; ask(v, true); }
+    };
+    if (!window.__micAsked) { window.__micAsked = 1; vnote('ครั้งแรกเบราว์เซอร์จะถามสิทธิ์ใช้ไมค์ กด "อนุญาต" ครั้งเดียวก็พอค่ะ'); }
+    try { rec.start(); } catch (e) { vnote('เริ่มฟังไม่ได้ ลองใหม่อีกครั้ง'); }
+  };
+}
+$('clearBtn').onclick = () => { stopSpeak(); $('msgs').innerHTML = ''; addMsg('bot', WELCOME); };
+
+// ---------- Admin ----------
+const toggleModal = on => $('modal').classList.toggle('on', on);
+$('adminBtn').onclick = () => toggleModal(true);
+$('closeBtn').onclick = () => toggleModal(false);
+$('logoutBtn').onclick = () => {
+  ss.del(ADMIN_KEY);
+  ss.del(PWD_KEY);
+  $('panel').hidden = true;
+  $('gate').hidden = false;
+  $('pwd').value = '';
+  $('pwdErr').style.display = 'none';
+  toggleModal(false);
+};
+$('modal').onclick = e => { if (e.target === $('modal')) toggleModal(false); };
+$('pwd').onkeydown = e => { if (e.key === 'Enter') login(); };
+$('loginBtn').onclick = login;
+async function login() {
+  const pwd = $('pwd').value;
+  const showErr = msg => { $('pwdErr').textContent = msg; $('pwdErr').style.display = 'block'; };
+  if (CLOUD) {
+    $('loginBtn').disabled = true;
+    ss.set(PWD_KEY, pwd);
+    try { await cloud('auth'); }
+    catch (e) {
+      ss.del(PWD_KEY);
+      showErr(e && e.message === 'bad-password' ? 'รหัสผ่านไม่ถูกต้อง' : (CLOUD_ERR[e && e.message] || 'เชื่อมต่อเซิร์ฟเวอร์ไม่สำเร็จ'));
+      $('loginBtn').disabled = false;
+      return;
+    }
+    $('loginBtn').disabled = false;
+  } else if (pwd !== ADMIN_PASSWORD) { showErr('รหัสผ่านไม่ถูกต้อง'); return; }
+  ss.set(ADMIN_KEY, '1');
+  const mine = tabLogIds();
+  if (mine.length) { LOGS = LOGS.filter(e => !mine.includes(e.id)); save(K.logs, LOGS); }
+  ss.del(TAB_LOGS);
+  $('gate').hidden = true;
+  $('panel').hidden = false;
+  refreshAdmin();
+  pullKB(true);
+}
+document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
+  document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === t));
+  document.querySelectorAll('[data-pane]').forEach(p => { p.hidden = p.dataset.pane !== t.dataset.tab; });
+  if (t.dataset.tab === 'log') { renderLogs(); if (CLOUD) loadCloudLogs(); }
+  if (t.dataset.tab === 'dept') renderDeptAdmin();
+});
+async function loadCloudLogs() {
+  try { const j = await cloud('logs'); LOGS = j.logs || []; renderLogs(); renderKB(); } catch (e) { /* ใช้ Log ในเครื่องแทน */ }
+}
+function refreshAdmin() { renderKB(); renderDeptAdmin(); renderLogs(); renderCfgFields(); }
+function persistKB() { save(K.kb, KB); rebuild(); }
+function persistDept() { save(K.dept, DEPTS); }
+
+function renderKB() {
+  $('resetBtn').textContent = CLOUD && !CLOUD_SEEDED ? 'ส่งข้อมูลเริ่มต้นขึ้นชีต' : 'คืนค่าเริ่มต้น';
+  $('seedWarn').hidden = !(CLOUD && !CLOUD_SEEDED);
+  const f = $('filterDept').value || 'all';
+  const list = KB.filter(d => f === 'all' || d.dept === f);
+  $('list').innerHTML = list.length ? list.map(d => `<div class="item"><div style="min-width:0"><b>${esc(d.title)}</b> <span class="sub">${esc(d.dept || '-')} · ${d.source === 'file' ? 'ไฟล์' : d.source === 'manual' ? 'กรอกเอง' : 'ระเบียบ'}</span><p>${esc(d.content)}</p>${(d.images || []).map(s => `<img class="thumb" src="${esc(s)}" alt="">`).join('')}</div><button class="btn btn-d" data-kb="${esc(d.id)}">ลบ</button></div>`).join('')
+    : '<p class="sub">ยังไม่มีข้อมูลในฝ่ายนี้</p>';
+  $('stDocs').textContent = KB.length;
+  $('stChunks').textContent = IDX.chunks.length;
+  $('stDepts').textContent = DEPTS.length;
+  $('stQ').textContent = LOGS.filter(e => e.type === 'ask').length;
+}
+$('filterDept').onchange = renderKB;
+$('list').onclick = async e => {
+  const b = e.target.closest('[data-kb]');
+  if (!b || !confirm('ลบหัวข้อนี้ออกจากคลังความรู้?')) return;
+  if (CLOUD) {
+    try { await cloud('delDoc', { id: b.dataset.kb }); await pullKB(true); renderKB(); } catch (err) { cloudErr(err); }
+    return;
+  }
+  KB = KB.filter(d => d.id !== b.dataset.kb);
+  persistKB(); renderKB();
+};
+function compressImage(file, maxSide = 1024, quality = 0.8) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+      const cv = document.createElement('canvas');
+      cv.width = Math.max(1, Math.round(img.width * scale));
+      cv.height = Math.max(1, Math.round(img.height * scale));
+      const ctx = cv.getContext('2d');
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, cv.width, cv.height);
+      ctx.drawImage(img, 0, 0, cv.width, cv.height);
+      URL.revokeObjectURL(url);
+      resolve(cv.toDataURL('image/jpeg', quality));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('อ่านรูป ' + file.name + ' ไม่สำเร็จ')); };
+    img.src = url;
+  });
+}
+let pendingImgs = [];
+const renderPending = () => {
+  $('mPreview').innerHTML = pendingImgs.map((s, i) => `<div><img src="${esc(s)}" alt=""><button data-rm="${i}" title="เอาออก">✕</button></div>`).join('');
+};
+$('mImgs').onchange = async e => {
+  const files = [...e.target.files];
+  e.target.value = '';
+  for (const f of files) {
+    if (pendingImgs.length >= 3) { alert('แนบรูปได้ไม่เกิน 3 รูปต่อหัวข้อ'); break; }
+    if (!f.type.startsWith('image/')) continue;
+    if (f.size > 15 * 1024 * 1024) { alert('รูป ' + f.name + ' ใหญ่เกิน 15 MB'); continue; }
+    try { pendingImgs.push(await compressImage(f)); } catch (err) { alert(err.message); }
+  }
+  renderPending();
+};
+$('mPreview').onclick = e => { const b = e.target.closest('[data-rm]'); if (!b) return; pendingImgs.splice(+b.dataset.rm, 1); renderPending(); };
+const subRowHTML = () => '<div class="subrow"><input class="inp sub-l" placeholder="หัวข้อย่อย เช่น เสื้อ"><textarea class="inp sub-b" rows="1" placeholder="รายละเอียด"></textarea><button type="button" class="btn btn-d" data-subrm title="ลบ">✕</button></div>';
+const resetSubs = () => { $('mSubs').innerHTML = subRowHTML(); };
+resetSubs();
+$('subAdd').onclick = () => $('mSubs').insertAdjacentHTML('beforeend', subRowHTML());
+$('mSubs').onclick = e => {
+  const b = e.target.closest('[data-subrm]');
+  if (!b) return;
+  b.closest('.subrow').remove();
+  if (!$('mSubs').children.length) resetSubs();
+};
+const needSeed = () => { if (CLOUD && !CLOUD_SEEDED) { alert('ชีตยังว่างอยู่ กดปุ่ม "ส่งข้อมูลเริ่มต้นขึ้นชีต" ในกล่อง "คลังความรู้" ก่อน แล้วค่อยเพิ่มข้อมูลใหม่'); return true; } return false; };
+$('addBtn').onclick = async () => {
+  const title = $('mTitle').value.trim(), free = $('mBody').value.trim();
+  const subs = [...document.querySelectorAll('#mSubs .subrow')]
+    .map(r => ({ l: r.querySelector('.sub-l').value.replace(/[:：]/g, ' ').replace(/\s+/g, ' ').trim(), b: r.querySelector('.sub-b').value.replace(/\s+/g, ' ').trim() }))
+    .filter(x => x.l && x.b);
+  const content = [free, ...subs.map(x => `${x.l}: ${x.b}`)].filter(Boolean).join('\n');
+  if (!title || !content) { alert('กรุณากรอกหัวข้อ และเนื้อหาหรือหัวข้อย่อยอย่างน้อย 1 รายการ'); return; }
+  if (needSeed()) return;
+  const kws = [...new Set([...$('mKw').value.split(',').map(s => s.trim()), ...subs.map(x => x.l)].filter(Boolean))];
+  const doc = { id: uid(), dept: $('mDept').value, title, content, keywords: kws, source: 'manual', images: pendingImgs.slice() };
+  if (CLOUD) {
+    const btn = $('addBtn');
+    btn.disabled = true; btn.textContent = 'กำลังบันทึกขึ้นชีต...';
+    try { await cloud('addDocs', { docs: [doc] }, 90000); await pullKB(true); }
+    catch (err) { cloudErr(err); return; }
+    finally { btn.disabled = false; btn.textContent = 'บันทึกเข้าคลัง'; }
+  } else {
+    KB.push(doc);
+    if (!save(K.kb, KB)) { KB.pop(); alert('พื้นที่จัดเก็บในเบราว์เซอร์เต็ม ลดจำนวนรูปหรือลบข้อมูลเก่าก่อนค่ะ'); return; }
+    rebuild();
+  }
+  renderKB();
+  ['mTitle', 'mBody', 'mKw'].forEach(i => { $(i).value = ''; });
+  resetSubs();
+  pendingImgs = [];
+  renderPending();
+  alert('บันทึกแล้ว น้องปาริชาตใช้ข้อมูลนี้ได้ทันที');
+};
+$('dropBtn').onclick = () => $('file').click();
+$('file').onchange = async e => {
+  if (needSeed()) { e.target.value = ''; return; }
+  const f = e.target.files[0];
+  e.target.value = '';
+  if (!f) return;
+  if (f.size > 2 * 1024 * 1024) { alert('ไฟล์ใหญ่เกิน 2 MB'); return; }
+  try {
+    const docs = parseFile(f.name, (await f.text()).replace(/^\uFEFF/, ''), $('upDept').value);
+    if (!docs.length) { alert('ไม่พบข้อมูลที่อ่านได้ในไฟล์นี้'); return; }
+    if (CLOUD) {
+      try { await cloud('addDocs', { docs }, 90000); await pullKB(true); } catch (err) { cloudErr(err); return; }
+    } else { KB.push(...docs); persistKB(); }
+    renderKB();
+    alert('นำเข้าข้อมูลสำเร็จ ' + docs.length + ' หัวข้อ');
+  } catch (err) { alert('อ่านไฟล์ไม่สำเร็จ: ' + err.message); }
+};
+function parseCSV(text) {
+  const rows = []; let row = [], cur = '', q = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (q) { if (ch === '"' && text[i + 1] === '"') { cur += '"'; i++; } else if (ch === '"') q = false; else cur += ch; }
+    else if (ch === '"') q = true;
+    else if (ch === ',') { row.push(cur); cur = ''; }
+    else if (ch === '\n' || ch === '\r') { if (ch === '\r' && text[i + 1] === '\n') i++; row.push(cur); rows.push(row); row = []; cur = ''; }
+    else cur += ch;
+  }
+  if (cur || row.length) { row.push(cur); rows.push(row); }
+  return rows.filter(r => r.some(c => c.trim()));
+}
+function parseFile(name, text, dept) {
+  const ext = name.split('.').pop().toLowerCase();
+  const base = name.replace(/\.[^.]+$/, '');
+  if (ext === 'json') {
+    const data = JSON.parse(text);
+    return (Array.isArray(data) ? data : [data]).map(o => {
+      const kw = Array.isArray(o.keywords) ? o.keywords : String(o.keywords || '').split(',');
+      return { id: uid(), dept, title: String(o.title || o.question || o.name || '').trim(), content: String(o.content || o.answer || o.detail || '').trim(), keywords: kw.map(s => String(s).trim()).filter(Boolean), source: 'file' };
+    }).filter(d => d.title && d.content);
+  }
+  if (ext === 'csv') {
+    const rows = parseCSV(text);
+    if (rows.length < 2) return [];
+    const head = rows[0].map(h => h.trim());
+    const qi = head.indexOf('question'), ai = head.indexOf('answer');
+    return rows.slice(1).map(r => {
+      if (qi >= 0 && ai >= 0) return { id: uid(), dept, title: (r[qi] || '').trim(), content: (r[ai] || '').trim(), keywords: [], source: 'file' };
+      const lines = head.map((h, i) => (r[i] || '').trim() && `${h}: ${r[i].trim()}`).filter(Boolean);
+      return { id: uid(), dept, title: (r[0] || '').trim() || base, content: lines.join('\n'), keywords: [], source: 'file' };
+    }).filter(d => d.title && d.content);
+  }
+  return text.trim() ? [{ id: uid(), dept, title: base, content: text.trim(), keywords: [], source: 'file' }] : [];
+}
+$('resetBtn').onclick = async () => {
+  if (CLOUD) {
+    const msg = CLOUD_SEEDED ? 'คืนค่าคลังความรู้เริ่มต้นในชีต? ข้อมูลที่ทุกคนเพิ่มไว้จะถูกลบและแทนที่ด้วยข้อมูลเริ่มต้น (ย้อนกลับไม่ได้)' : 'ส่งข้อมูลเริ่มต้น ' + DEFAULT_KB.length + ' หัวข้อขึ้นชีต?';
+    if (!confirm(msg)) return;
+    const btn = $('resetBtn'); btn.disabled = true;
+    try {
+      await cloud('replaceAll', { docs: clone(DEFAULT_KB), depts: CLOUD_SEEDED ? DEFAULT_DEPTS : DEPTS }, 90000);
+      await pullKB(true); renderKB(); alert('เรียบร้อย ข้อมูลอยู่ในชีตแล้ว');
+    } catch (err) { cloudErr(err); } finally { btn.disabled = false; }
+    return;
+  }
+  if (!confirm('คืนค่าคลังความรู้เริ่มต้น? ข้อมูลที่เพิ่มเองจะหายไป')) return;
+  KB = clone(DEFAULT_KB);
+  persistKB(); renderKB();
+};
+
+function renderDeptAdmin() {
+  $('deptList').innerHTML = DEPTS.map((d, i) => `<div class="item"><div><b>${esc(d)}</b><p>${KB.filter(x => x.dept === d).length} หัวข้อความรู้</p></div><div class="row2"><button class="btn btn-s" data-ren="${i}">แก้ชื่อ</button><button class="btn btn-d" data-del="${i}">ลบ</button></div></div>`).join('');
+}
+async function saveDepts(next, rename) {
+  if (CLOUD) {
+    if (needSeed()) return false;
+    try { await cloud('setDepts', { depts: next, rename }); await pullKB(true); return true; } catch (err) { cloudErr(err); return false; }
+  }
+  if (rename) KB.forEach(d => { if (d.dept === rename.from) d.dept = rename.to; });
+  DEPTS = next; persistDept(); persistKB();
+  return true;
+}
+$('deptAdd').onclick = async () => {
+  const v = $('newDept').value.trim();
+  if (!v || DEPTS.includes(v)) return;
+  if (!(await saveDepts([...DEPTS, v]))) return;
+  $('newDept').value = '';
+  renderDepts(); renderDeptAdmin(); renderKB();
+};
+$('deptList').onclick = async e => {
+  const ren = e.target.closest('[data-ren]'), del = e.target.closest('[data-del]');
+  if (ren) {
+    const i = +ren.dataset.ren, old = DEPTS[i], nv = (prompt('ชื่อฝ่ายใหม่', old) || '').trim();
+    if (!nv || DEPTS.includes(nv)) return;
+    const next = DEPTS.slice(); next[i] = nv;
+    if (!(await saveDepts(next, { from: old, to: nv }))) return;
+    if (curDept === old) curDept = nv;
+  } else if (del) {
+    const i = +del.dataset.del, name = DEPTS[i];
+    if (KB.some(d => d.dept === name)) { alert('ลบฝ่ายนี้ไม่ได้ เพราะยังมีหัวข้อความรู้ ให้ลบหรือย้ายหัวข้อก่อน'); return; }
+    if (DEPTS.length < 2) { alert('ต้องมีอย่างน้อย 1 ฝ่าย'); return; }
+    if (!confirm('ลบฝ่าย ' + name + ' ?')) return;
+    if (!(await saveDepts(DEPTS.filter((_, k) => k !== i)))) return;
+    if (curDept === name) curDept = 'all';
+  } else return;
+  renderDepts(); renderDeptAdmin(); renderKB();
+};
+
+const runTest = () => {
+  const q = $('tq').value.trim();
+  if (!q) { $('tOut').innerHTML = ''; return; }
+  const { terms, hits } = search(q, 6, 'all');
+  $('tOut').innerHTML = !hits.length ? '<span style="color:#b91c1c">ไม่พบข้อมูลที่เกี่ยวข้อง</span>'
+    : `<div>คำสำคัญ: ${terms.map(t => `<span class="chip">${esc(t)}</span>`).join('')}</div>` + hits.map(h => `<div class="item" style="margin:6px 0"><div><b>${esc(h.c.dept)} › ${esc(h.c.doc)}${h.c.section ? ' › ' + esc(h.c.section) : ''}</b> · คะแนน ${h.score.toFixed(2)}<p>${esc(h.c.label ? h.c.label + ': ' + h.c.body : h.c.body)}</p></div></div>`).join('');
+};
+$('tBtn').onclick = runTest;
+$('tq').onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); runTest(); } };
+
+$('cloudRefresh').onclick = async () => { $('cloudStat').textContent = 'กำลังรีเฟรช...'; await pullKB(true); renderCfgFields(); };
+function renderCfgFields() {
+  $('aiBox').hidden = $('logBox').hidden = CLOUD;
+  $('cloudBox').hidden = !CLOUD;
+  if (CLOUD) {
+    $('cloudStat').textContent = (CLOUD_SEEDED ? '✅ ชีตพร้อมใช้งาน' : '⚠️ ชีตยังไม่มีข้อมูล') + ' · ' + (CLOUD_AI ? '🤖 AI พร้อมตอบ' : '🔎 ยังไม่ได้ตั้ง ANTHROPIC_KEY (ตอบจากการค้นหาอย่างเดียว)');
+    return;
+  }
+  $('aiOn').checked = !!CFG.enabled;
+  $('aiKey').value = CFG.key || '';
+  $('aiModel').value = CFG.model || 'claude-haiku-5-5';
+  $('logUrl').value = CFG.logUrl || '';
+}
+$('cfgSave').onclick = () => {
+  CFG = { enabled: $('aiOn').checked, key: $('aiKey').value.trim(), model: $('aiModel').value.trim() || 'claude-haiku-5-5', logUrl: $('logUrl').value.trim() };
+  save(K.cfg, CFG);
+  $('cfgStatus').textContent = '✅ บันทึกแล้ว';
+};
+
+// ---------- Init ----------
+rebuild();
+renderDepts();
+addMsg('bot', WELCOME);
+if (CLOUD) {
+  pullKB(true);
+  let tick = 0;
+  setInterval(() => { tick++; if (!document.hidden && (isAdminSession() || tick % 6 === 0)) pullKB(false); }, 30000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) pullKB(false); });
+}
+logEvent({ type: 'visit', ua: /Mobi|Android|iPhone/i.test(navigator.userAgent) ? 'มือถือ' : 'คอมพิวเตอร์' });
+if (isAdminSession()) { $('gate').hidden = true; $('panel').hidden = false; refreshAdmin(); }
+</script>
+</body>
+</html>
