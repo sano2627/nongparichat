@@ -889,15 +889,20 @@ function speechParts(x, max) {
   return out.map(z => z.trim()).filter(Boolean);
 }
 let ttsAudio = null, ttsRun = 0;
+// ปลดล็อกการเล่นเสียงตอนผู้ใช้กดปุ่ม (Chrome บนคอมบล็อกเสียงที่เล่นเองหลังรอคำตอบ) แล้วใช้ตัวเล่นเดิมซ้ำ
+const ttsEl = new Audio();
+const SILENT = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+function unlockAudio() { try { if (!ttsEl.__ok) { ttsEl.src = SILENT; const pr = ttsEl.play(); if (pr && pr.then) pr.then(() => { ttsEl.__ok = 1; }).catch(() => {}); } } catch (e) {} }
+['pointerdown', 'keydown'].forEach(ev => document.addEventListener(ev, unlockAudio, { once: false, passive: true }));
 function stopSpeak() { ttsRun++; if (synth) synth.cancel(); if (ttsAudio) { try { ttsAudio.pause(); } catch (e) {} ttsAudio = null; } }
 // สำรอง: เครื่องไม่มีเสียงไทย → ใช้เสียงไทยออนไลน์ของ Google Translate (ต้องต่ออินเทอร์เน็ต)
 function speakOnline(parts) {
   const run = ++ttsRun; let i = 0;
   const next = () => {
     if (run !== ttsRun || i >= parts.length) return;
-    const a = new Audio('https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=th&q=' + encodeURIComponent(parts[i++]));
+    const a = ttsEl; a.src = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=th&q=' + encodeURIComponent(parts[i++]);
     ttsAudio = a; a.onended = next; a.onerror = () => vnote('เครื่องนี้ไม่มีเสียงอ่านภาษาไทย และเชื่อมต่อเสียงออนไลน์ไม่ได้ จึงอ่านออกเสียงไม่ได้ค่ะ');
-    a.play().catch(() => vnote('เบราว์เซอร์ไม่อนุญาตให้เล่นเสียงอัตโนมัติ ลองกดปุ่มลำโพงอีกครั้งค่ะ'));
+    a.play().catch(() => vnote('เครื่องนี้ไม่มีเสียงอ่านภาษาไทย และเล่นเสียงออนไลน์ไม่ได้ แนะนำให้เปิดด้วย Microsoft Edge (มีเสียงไทยในตัว) หรือติดตั้งเสียงภาษาไทยใน Windows ค่ะ'));
   };
   next();
 }
