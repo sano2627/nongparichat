@@ -766,18 +766,22 @@ async function smartAnswer(q0, dept) {
   return { text: fixThai(raw.replace(/\s*\[\d+(?:\s*,\s*\d+)*\]/g, '')).trim(), terms, docs: [...new Set(pick.map(h => h.c.doc))], more: [], mode: 'ai', found: true, images: pickImages(pick) };
 }
 const OVERVIEW_RE = /(ระเบียบ|กฎ|ข้อบังคับ).{0,14}(สำคัญ|หลัก|ทั้งหมด|อะไรบ้าง|มีอะไร|ที่ควรรู้)|(สำคัญ|หลัก).{0,10}(ระเบียบ|กฎ)|มีระเบียบอะไร|^(ระเบียบ|กฎ)(ของ)?(วิทยาลัย)?(ครับ|ค่ะ|คะ)?$/;
+const RULE_TITLE = /ระเบียบ|ข้อบังคับ|กฎ|การแต่งกาย|ทรงผม|เครื่องแบบ|ลงโทษ|ความประพฤติ|ตัดคะแนน|พฤติกรรม|วินัย|นำรถ|จอดรถ|มาตรการ/;
 function overviewAnswer(dept) {
   const by = new Map();
   KB.forEach(d => {
     if (dept !== 'all' && d.dept !== dept) return;
     const t = String(d.title || '').replace(/\s*ข้อ\s*\d+.*$/, '').slice(0, 60).replace(/\s*\((ปวช|ปวส)\.?\)\s*$/, '').trim();
-    if (!t) return;
+    if (!t || !RULE_TITLE.test(t)) return;
+    const key = t.replace(/[\s.]/g, '').replace(/ๆ+/g, 'ๆ');
+    const a0 = by.get(d.dept || 'อื่นๆ');
+    if (a0 && [...a0].some(x => x.replace(/[\s.]/g, '').replace(/ๆ+/g, 'ๆ') === key)) return;
     const a = by.get(d.dept || 'อื่นๆ') || new Set(); a.add(t); by.set(d.dept || 'อื่นๆ', a);
   });
   if (!by.size) return null;
   const parts = [];
-  by.forEach((set, dp) => { const items = [...set].slice(0, 8); parts.push('**' + dp + '**\n' + items.map(x => '- ' + x).join('\n') + (set.size > 8 ? '\n- และเรื่องอื่นๆ อีก' : '')); });
-  return { text: 'ตอนนี้น้องปาริชาตมีข้อมูลระเบียบและเรื่องสำคัญของวิทยาลัยตามหัวข้อนี้ค่ะ\n\n' + parts.join('\n\n') + '\n\nอยากทราบเรื่องไหนพิมพ์ถามได้เลยนะคะ เช่น "การแต่งกายนักศึกษาหญิง" หรือ "ตัดคะแนนความประพฤติ"', terms: [], docs: [], more: [], mode: 'local', found: true };
+  by.forEach((set, dp) => { const items = [...set].slice(0, 12); parts.push('**' + dp + '**\n' + items.map(x => '- ' + x).join('\n') + (set.size > 12 ? '\n- และเรื่องอื่นๆ อีก' : '')); });
+  return { text: 'ตอนนี้น้องปาริชาตมีข้อมูลระเบียบของวิทยาลัยตามหัวข้อนี้ค่ะ\n\n' + parts.join('\n\n') + '\n\nอยากทราบเรื่องไหนพิมพ์ถามได้เลยนะคะ เช่น "การแต่งกายนักศึกษาหญิง" หรือ "ตัดคะแนนความประพฤติ"', terms: [], docs: [], more: [], mode: 'local', found: true };
 }
 const INTRO_RE = /(อธิบาย|แนะนำ|เล่า|บอก).{0,6}(ตัวเอง|ตัวหน่อย|แชท|บอท|เว็บ|ระบบ|น้องปาริชาต)|(คุณ|เธอ|น้อง|เป็น|นี่).{0,4}(คือ|เป็น)?.{0,3}(ใคร|อะไร)|ทำอะไรได้|ช่วยอะไรได้|ใช้(งาน)?(ยังไง|อย่างไร)|ชื่ออะไร|แชทนี้|น้องปาริชาตคือ/;
 function introAnswer() {
