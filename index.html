@@ -707,7 +707,32 @@ function followInfo(q, dept) {
   return { sq: last.q + ' ' + q, hb: 'บทสนทนาก่อนหน้า (ใช้เพื่อเข้าใจว่าคำถามใหม่ต่อเนื่องจากเรื่องอะไร ไม่ใช่ข้อมูลอ้างอิง):\n' + HIST.slice(-2).map(h => 'ผู้ใช้ถาม: ' + h.q + '\nน้องปาริชาตตอบ: ' + h.a).join('\n') + '\n\nข้อมูลอ้างอิง:\n' };
 }
 const NOCTX = '(ไม่มีข้อมูลในระเบียบที่ตรงกับคำถามนี้ ให้ตอบตามข้อ 9 14 15 16)';
-async function adviceAnswer(q, hb) {
+// ค้นด้วย AI: เมื่อค้นด้วยคำไม่เจอเลย ให้ AI เลือกแถวข้อมูลที่เกี่ยวข้องจากรายการหัวข้อ แล้วตอบจากแถวนั้น (กันกรณีใช้คำต่างจากในชีต)
+async function aiPickAnswer(q0, dept, HB) {
+  const docs = KB.filter(d => dept === 'all' || d.dept === dept);
+  if (!docs.length) return null;
+  let sn = 70, cat = '';
+  for (; sn >= 20; sn -= 25) {
+    cat = docs.map((d, i) => (i + 1) + '. ' + (d.dept ? d.dept + ' › ' : '') + String(d.title || '').slice(0, 70) + ' :: ' + String(d.content || '').replace(/\s+/g, ' ').slice(0, sn)).join('\n');
+    if (cat.length <= 15000) break;
+  }
+  cat = cat.slice(0, 15500);
+  const pick = await callClaude('จากรายการแถวข้อมูลด้านล่าง เลือกหมายเลขแถวที่ใช้ตอบคำถามนี้ได้ (ไม่เกิน 5 แถว) ตอบเฉพาะตัวเลขคั่นด้วยจุลภาค เช่น 3,7 ห้ามอธิบาย ถ้าไม่มีแถวที่เกี่ยวข้องจริงๆ ตอบว่า 0\nคำถาม: ' + q0, cat);
+  const nums = [...new Set((String(pick).match(/\d+/g) || []).map(Number))].filter(n => n >= 1 && n <= docs.length).slice(0, 5);
+  if (!nums.length) return null;
+  const keys = new Set(nums.map(n => docs[n - 1].id));
+  let used = 0;
+  const ordered = IDX.chunks.filter(c => keys.has(c.docKey)).sort((x, y) => x.i - y.i).filter(c => (used += c.body.length) < 14000).map(c => ({ c }));
+  if (!ordered.length) return null;
+  const ctx = ordered.map((h, i) => `[${i + 1}] (${h.c.dept ? h.c.dept + ' › ' : ''}${h.c.doc}${h.c.section ? ' › ' + h.c.section : ''}${h.c.label ? ' › ' + h.c.label : ''}) ${h.c.body}`).join('\n');
+  const raw = await callClaude(q0, HB + ctx);
+  if (!raw) throw new Error('empty');
+  const cited = [...new Set([...raw.matchAll(/\[(\d+)\]/g)].map(m => +m[1]))].filter(n => n >= 1 && n <= ordered.length);
+  const pk = cited.length ? cited.map(n => ordered[n - 1]) : ordered;
+  return { text: fixThai(raw.replace(/\s*\[\d+(?:\s*,\s*\d+)*\]/g, '')).trim(), terms: [], docs: [...new Set(pk.map(h => h.c.doc))], more: [], mode: 'ai', found: true, images: pickImages(pk) };
+}
+async function adviceAnswer(q, hb, dept) {
+  if (dept) { const r = await aiPickAnswer(q, dept, hb || ''); if (r) return r; }
   const raw = await callClaude(q, (hb || '') + NOCTX);
   if (!raw) throw new Error('empty');
   return { text: fixThai(raw.replace(/\s*\[\d+(?:\s*,\s*\d+)*\]/g, '')).trim(), terms: [], docs: [], more: [], mode: 'ai', found: false };
@@ -718,7 +743,7 @@ async function smartAnswer(q0, dept) {
   if (!aiReady()) return { ...answer(q, dept), mode: 'local' };
   if (!hits.length) {
     const fz = fuzzyChunks(q, dept);
-    if (!fz.length) return adviceAnswer(q0, HB);
+    if (!fz.length) return adviceAnswer(q0, HB, dept);
     const ord = fz.map(c => ({ c }));
     const ctx = ord.map((h, i) => `[${i + 1}] (${h.c.dept ? h.c.dept + ' › ' : ''}${h.c.doc}${h.c.section ? ' › ' + h.c.section : ''}${h.c.label ? ' › ' + h.c.label : ''}) ${h.c.body}`).join('\n');
     const rawF = await callClaude(q0 + ' (คำถามอาจพิมพ์ผิดหรือย่อคำ ให้เดาเจตนาจากข้อมูลอ้างอิงที่ให้มา ถ้าข้อมูลอ้างอิงไม่เกี่ยวข้องกับคำถามจริงๆ ห้ามนำมาตอบ ให้ทำตามข้อ 9 14 15 16 ของคำแนะนำ)', HB + ctx);
@@ -747,7 +772,7 @@ async function smartAnswer(q0, dept) {
   let used = 0;
   const ordered = IDX.chunks.filter(c => keys.has(c.docKey) && !(qg && c.gender && c.gender !== qg) && !(ql && c.level && c.level !== ql))
     .sort((x, y) => x.i - y.i).filter(c => (used += c.body.length) < 14000).map(c => ({ c }));
-  if (!ordered.length) return adviceAnswer(q0, HB);
+  if (!ordered.length) return adviceAnswer(q0, HB, dept);
   // ถามการแต่งกาย → เหลือเฉพาะหัวข้อการแต่งกาย / ถามเครื่องแบบ → เหลือเฉพาะรายการเครื่องแบบ (แยกตามระดับ/เพศ) เพื่อไม่ให้ AI หยิบของอีกเรื่องมาปน
   const aDress = /การแต่งกาย|แต่งการ/.test(q), aUni = /เครื่องแบบ|ชุดนักเรียน|ชุดนักศึกษา/.test(q);
   if (aDress !== aUni) {
@@ -812,16 +837,28 @@ function introAnswer() {
   const t = '**สวัสดีค่ะ ' + NAME + ' ผู้ช่วยประจำวิทยาลัยการอาชีพนครปฐมค่ะ** 🌸\n\nพี่คอยตอบคำถามให้นักเรียน นักศึกษา และผู้ปกครอง จากข้อมูลที่แต่ละฝ่ายของวิทยาลัยบันทึกไว้ เช่น\n- ระเบียบการแต่งกาย เครื่องแบบ ทรงผม (แยก ปวช. / ปวส.)\n- ความประพฤติ การตัดคะแนน การนำรถมาจอด\n- กิจกรรม ค่าใช้จ่าย ทุน กยศ. และข้อมูลของฝ่ายต่างๆ\n- คำแนะนำทั่วไปเรื่องเรียน เช่น ดรอปเรียน ลาออก การพัฒนาเกรด\n\nถ้ามีรูปประกอบในข้อมูล พี่จะแนบให้ด้วย พิมพ์ถามได้เลย หรือกดไมค์ 🎤 พูดแล้วเปิดเสียง 🔊 ให้พี่อ่านคำตอบก็ได้ค่ะ ถ้าเรื่องไหนไม่มีในระเบียบ พี่จะบอกตรงๆ ไม่เดาให้ค่ะ';
   return { text: t, terms: [], docs: [], more: [], mode: 'local', found: true };
 }
+// ถามเรื่องสมัครเรียนโดยไม่ได้พูดถึงโควตา → ไม่ใช้ข้อมูลรอบโควตา ถ้าไม่มีข้อมูลรับสมัครอื่นให้ตอบว่ายังไม่มีกำหนดการ
+const APPLY_RE = /สมัครเรียน|เปิดรับสมัคร|รับสมัคร|วิธีสมัคร|สมัครยังไง|สมัครอย่างไร|สมัครได้|อยากสมัคร|การสมัคร|ใบสมัคร|เข้าเรียนยังไง|ต่อ\s*(ปวช|ปวส)/;
+const NO_APPLY_TEXT = 'ตอนนี้ยังไม่มีกำหนดการเปิดรับสมัครรอบใหม่ค่ะ';
+const isQuotaDoc = d => /โควต/.test(String(d.title || '') + ' ' + String(d.content || '').slice(0, 400));
+async function applyGuard(q, dept, run) {
+  if (!APPLY_RE.test(q) || /โควต|กิจกรรม|ชมรม|ทุน|กยศ|หอพัก|นักกีฬา/.test(q)) return run();
+  const rest = KB.filter(d => !isQuotaDoc(d));
+  if (!rest.some(d => /สมัคร|มอบตัว|ลงทะเบียนเรียน|รับนักเรียน|รับนักศึกษา/.test(String(d.title || '')))) return { text: NO_APPLY_TEXT, terms: [], docs: [], more: [], mode: 'local', found: true };
+  const sk = KB, sc = IDX.chunks, ban = new Set(KB.filter(isQuotaDoc).map(d => d.id));
+  KB = rest; IDX.chunks = sc.filter(c => !ban.has(c.docKey));
+  try { return await run(); } finally { KB = sk; IDX.chunks = sc; }
+}
 async function respond(q, dept) {
   { const st = staffAnswer(q); if (st) return st; }
   if (q.length <= 40 && INTRO_RE.test(q)) return introAnswer();
   if (MAJOR_RE.test(q) && !/ย้าย|เปลี่ยน|ลาออก|ค่า|สมัคร/.test(q)) return { text: MAJOR_TEXT, terms: [], docs: [], more: [], mode: 'local', found: true };
   if (OVERVIEW_RE.test(q)) { const ov = overviewAnswer(dept); if (ov) return ov; }
-  try { return await smartAnswer(q, dept); }
+  try { return await applyGuard(q, dept, () => smartAnswer(q, dept)); }
   catch (err) {
     const dbg = isAdminSession() || /debug/.test(location.hash);
     const why = dbg ? ' [' + ((err && err.message) || 'error') + ((err && err.detail) ? ' · ' + err.detail : '') + ']' : '';
-    return { ...answer(q, dept), mode: 'local', note: '⚠️ เชื่อมต่อ AI ไม่สำเร็จ จึงแสดงผลจากการค้นหาในเครื่องแทน' + why };
+    return { ...(await applyGuard(q, dept, async () => answer(q, dept))), mode: 'local', note: '⚠️ เชื่อมต่อ AI ไม่สำเร็จ จึงแสดงผลจากการค้นหาในเครื่องแทน' + why };
   }
 }
 
